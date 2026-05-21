@@ -417,7 +417,7 @@ window.joinRoom=async()=>{
   const snap=await get(ref(db,'rooms/'+code));
   if(!snap.exists()){setError('Stanza non trovata.');return;}
   const room=snap.val();
-  if(room.started){setError('La partita e' gia' iniziata.');return;}
+  if(room.started){setError("La partita \u00e8 gi\u00e0 iniziata.");return;}
   if(room.players&&room.players.length>=4){setError('Stanza piena (max 4 giocatori).');return;}
   const players=[...(room.players||[]),name];
   myName=name;isHost=false;roomCode=code;
@@ -526,7 +526,7 @@ function render(){
   const pendingCapIds=new Set((pendingCapture||[]).map(c=>c.id));
   const tableToShow=pendingCard?[...(pendingTableBefore||GS.table),pendingCard]:GS.table;
   if(tableToShow.length===0){
-    tc.innerHTML='<span class="table-empty">Il tavolo e' vuoto</span>';
+    tc.innerHTML='<span class="table-empty">Il tavolo &egrave; vuoto</span>';
   } else {
     tc.innerHTML=tableToShow.map(c=>{
       const isPlayed=pendingCard&&c.id===pendingCard.id;
