@@ -538,7 +538,7 @@ function render(){
       if(isCapturing)    cls+=' cap-selected';
       if(canCap&&!capSel)cls+=' highlight clickable';
       if(capSel)         cls+=' cap-selected clickable';
-      return '<div class="'+cls+'" style="width:62px;height:96px" onclick="tableCardClick(''+c.id+'')">'+cardHTML(c)+'</div>';
+      return '<div class="'+cls+'" style="width:62px;height:96px" onclick="tableCardClick(\'+c.id+\')">'+cardHTML(c)+'</div>';
     }).join('');
   }
   const hint=document.getElementById('captureHint');
@@ -550,7 +550,7 @@ function render(){
   document.getElementById('handCards').innerHTML=myHand.map(c=>{
     const mt=GS.currentTurn===PI,sel=selectedCard&&selectedCard.id===c.id;
     let cls='card '+(mt?'clickable':'faded')+(sel?' selected':'');
-    return '<div class="'+cls+'" style="width:62px;height:96px" onclick="handCardClick(''+c.id+'')">'+cardHTML(c)+'</div>';
+    return '<div class="'+cls+'" style="width:62px;height:96px" onclick="handCardClick(\'+c.id+\')">'+cardHTML(c)+'</div>';
   }).join('');
 
   const aa=document.getElementById('actionArea'),myTurn=GS.currentTurn===PI&&!pendingCard;
