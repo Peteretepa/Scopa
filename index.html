@@ -882,7 +882,8 @@ function render(opts={}){
   }
 
   // Scores bar
-  document.getElementById('scoresBar').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-cell"><div class="score-name">${name}${i===PI?' (tu)':''}</div><div class="score-val${GS.currentTurn===i?' active':''}">${totalScores[i]}</div></div>`).join('');
+  const _primo=(GS.dealer+1)%GS.playerNames.length;
+  document.getElementById('scoresBar').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-cell"><div class="score-name">${name}${i===_primo?' (primo)':''}</div><div class="score-val${GS.currentTurn===i?' active':''}">${totalScores[i]}</div></div>`).join('');
 
   // Log
   const le=document.getElementById('logEntries');
@@ -893,7 +894,7 @@ function render(opts={}){
   {const names=GS.playerNames;
    const gt=gameTotalsAccum||names.map(()=>({scopas:0,carte:0,denari:0,settebello:0,primiera:0}));
    const gcell=(vals,i)=>{const v=vals[i],mx=Math.max(...vals);const win=mx>0&&vals.filter(x=>x===mx).length===1&&v===mx;return `<td class="pts-cell${win?' scored':''}">${v}</td>`;};
-   const thead=`<thead><tr><th></th>${names.map((n,i)=>`<th>${n}${i===PI?' (tu)':''}</th>`).join('')}</tr></thead>`;
+   const thead=`<thead><tr><th></th>${names.map(n=>`<th>${n}</th>`).join('')}</tr></thead>`;
    let rows='';
    rows+=`<tr><td>Scope</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
    rows+=`<tr><td>Carte</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
@@ -1073,7 +1074,7 @@ function showRoundScoreboard(gs){
     return `<td><span class="${cls}">${val}</span>${det}</td>`;
   }
 
-  let thead=`<thead><tr><th>Categoria</th>${names.map((n,i)=>`<th>${n}${i===PI?' (tu)':''}</th>`).join('')}</tr></thead>`;
+  let thead=`<thead><tr><th>Categoria</th>${names.map(n=>`<th>${n}</th>`).join('')}</tr></thead>`;
   let rows='';
   // Start
   rows+=`<tr><td>Inizio Round</td>${names.map((_,i)=>`<td><span class="pts-cell">${scoresBefore[i]}</span></td>`).join('')}</tr>`;
@@ -1182,7 +1183,7 @@ function endGame(gs,wi){
     const winner=mx>0&&vals.filter(x=>x===mx).length===1&&v===mx;
     return `<td><span class="pts-cell${winner?' scored':''}">${v}</span></td>`;
   }
-  const thead=`<thead><tr><th>Categoria</th>${names.map((nm,i)=>`<th>${nm}${i===PI?' (tu)':''}</th>`).join('')}</tr></thead>`;
+  const thead=`<thead><tr><th>Categoria</th>${names.map(nm=>`<th>${nm}</th>`).join('')}</tr></thead>`;
   let rows='';
   rows+=`<tr><td>Scope</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
   rows+=`<tr><td>Carte</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
@@ -1312,8 +1313,9 @@ window.copyBannerCode=()=>{
 };
 window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
-window.toggleRules=()=>{document.getElementById('rulesDrawer').classList.toggle('open');};
-window.toggleDeckChart=()=>{document.getElementById('deckDrawer').classList.toggle('open');};
+window.toggleRules=()=>{const d=document.getElementById('rulesDrawer'),b=document.getElementById('rulesBackdrop');const o=d.classList.toggle('open');b.style.display=o?'block':'none';};
+window.toggleDeckChart=()=>{const d=document.getElementById('deckDrawer'),b=document.getElementById('deckBackdrop');const o=d.classList.toggle('open');b.style.display=o?'block':'none';};
+document.addEventListener('click',e=>{const ap=document.getElementById('audioPanel');if(ap&&ap.style.display!=='none'&&!ap.parentElement.contains(e.target))ap.style.display='none';});
 function renderDeckChart(){
   const thead=`<tr><th style="min-width:70px"></th>${VALS.map(v=>`<th>${v}</th>`).join('')}</tr>`;
   const rows=SUITS.map(suit=>`<tr><td class="suit-label">${suitImg(suit,20)} ${suit}</td>${VALS.map(v=>`<td><div class="card" style="width:60px;height:93px">${cardHTML({suit,value:v})}</div></td>`).join('')}</tr>`).join('');
@@ -1323,6 +1325,8 @@ function flashScopa(msg){SFX.scopa();const el=document.getElementById('scopaFlas
 function flashCollection(name){return new Promise(r=>{const el=document.getElementById('collectionFlash');el.textContent=`${name} collects the remaining cards`;el.style.display='block';setTimeout(()=>{el.style.display='none';r();},2000);});}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 </script>
+<div id="rulesBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="toggleRules()"></div>
+<div id="deckBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="toggleDeckChart()"></div>
 <div id="bottomBtns">
   <button class="bb-btn" onclick="toggleDeckChart()" title="Mazzo"><span class="card-shape-icon"></span></button>
   <div style="position:relative">
