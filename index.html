@@ -44,22 +44,22 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .waiting-msg{text-align:center;color:rgba(200,168,80,.6);font-size:13px;font-style:italic}
 
 /* ── GAME ── */
-#sGame{flex-direction:column;background:radial-gradient(ellipse at 50% 50%,var(--felt2) 0%,var(--bg) 100%)}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid rgba(200,168,80,.18);background:rgba(0,0,0,.35);flex-shrink:0}
+#sGame{flex-direction:column;background:radial-gradient(ellipse at 50% 50%,var(--felt2) 0%,var(--bg) 100%);height:100svh;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid rgba(200,168,80,.18);background:rgba(0,0,0,.35);flex-shrink:0;position:relative}
 .topbar-left{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--gold)}
 #topSuits{display:inline-flex;gap:20px;align-items:center}
-.topbar-info{font-size:14px;color:rgba(200,168,80,.55);letter-spacing:1px}
+.topbar-info{font-size:14px;color:rgba(200,168,80,.55);letter-spacing:1px;position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none}
 .topbar-btns{display:flex;gap:8px}
 .sm-btn{background:none;border:1px solid rgba(200,168,80,.25);border-radius:5px;color:var(--gold);font-size:13px;padding:4px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px}
 .sm-btn:hover{background:rgba(200,168,80,.1)}
-.game-inner{flex:1;display:flex;flex-direction:column;padding:10px 14px;gap:10px;max-width:740px;margin:0 auto;width:100%}
+.game-inner{flex:1;display:flex;flex-direction:column;padding:10px 14px;gap:10px;max-width:740px;margin:0 auto;width:100%;overflow-y:auto}
 .opponents-area{display:flex;flex-wrap:wrap;gap:10px}
 .opp-hand{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.2);border-radius:8px;padding:8px 12px;flex:1;min-width:160px}
 .opp-name{font-size:15px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opp-name.active{color:#ffd700;font-weight:bold}
 .opp-stats{font-size:13px;color:rgba(200,168,80,.45)}
 .opp-cards{display:flex}
-.table-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border-radius:12px;padding:14px;border:1px solid rgba(200,168,80,.12);min-height:130px}
+.table-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border-radius:12px;padding:14px;border:1px solid rgba(200,168,80,.12);min-height:130px;overflow:hidden}
 .table-label{font-size:12px;letter-spacing:3px;color:rgba(200,168,80,.4);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
 .table-cards{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .table-empty{color:rgba(200,168,80,.25);font-size:13px;font-style:italic}
@@ -188,6 +188,12 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .go-winner{font-size:56px;color:#ffd700;margin-bottom:6px;text-shadow:0 0 30px rgba(255,215,0,.4)}
 .go-subtitle{font-size:15px;color:var(--gold);margin-bottom:22px;font-style:italic}
 .go-table-wrap{width:100%;max-width:560px;background:#120e00;border:1px solid rgba(200,168,80,.38);border-radius:10px;overflow:hidden;margin-bottom:22px;padding:0 20px}
+@media(max-width:480px){
+  .table-cards .card{width:60px!important;height:93px!important}
+  .opp-hand{min-width:110px;padding:6px 8px}
+  .opp-name{font-size:13px}
+  .opp-stats{font-size:11px}
+}
 </style>
 </head>
 <body>
