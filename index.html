@@ -145,6 +145,19 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .scopa-flash{position:fixed;top:28%;left:50%;transform:translateX(-50%);z-index:300;background:var(--red2);color:#ffd700;font-size:38px;font-weight:bold;padding:14px 36px;border-radius:10px;letter-spacing:5px;box-shadow:0 4px 24px rgba(176,32,32,.7);font-family:'IM Fell English SC',serif;animation:flashIn .3s ease;pointer-events:none;white-space:nowrap}
 @keyframes flashIn{from{opacity:0;transform:translateX(-50%) scale(.7)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 
+/* ── RULES DRAWER ── */
+.rules-drawer{position:fixed;top:0;right:-100%;width:min(360px,95vw);height:100vh;background:#0e0a00;border-left:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:right .3s ease;overflow:hidden}
+.rules-drawer.open{right:0}
+.rules-content{flex:1;overflow-y:auto;padding:20px 18px;font-size:13px;line-height:1.85;color:rgba(253,243,220,.88)}
+.rules-heading{font-family:'IM Fell English SC',serif;font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(200,168,80,.2)}
+.rule-block{margin-bottom:16px}
+.rule-name{color:var(--gold);font-family:'IM Fell English SC',serif;font-size:13px;letter-spacing:1px}
+.rule-sub{font-size:11px;color:rgba(200,168,80,.6);margin:4px 0 2px;font-style:italic}
+.primiera-scores{margin:4px 0 4px 12px;display:grid;grid-template-columns:48px 1fr;row-gap:1px;font-size:12px;color:rgba(253,243,220,.7)}
+.rules-note{color:rgba(200,168,80,.5);font-style:italic;font-size:12px;margin-top:10px;text-align:center}
+#rulesBtn{position:fixed;bottom:20px;right:20px;z-index:250;width:38px;height:38px;border-radius:50%;background:rgba(200,168,80,.12);border:1px solid rgba(200,168,80,.38);color:var(--gold);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'IM Fell English SC',serif;transition:background .15s;line-height:1}
+#rulesBtn:hover{background:rgba(200,168,80,.22)}
+
 /* ── GAME OVER ── */
 #sGameOver{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;background:radial-gradient(ellipse at 50% 40%,#2a1800 0%,var(--bg) 70%)}
 .go-sub{font-size:12px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
@@ -257,6 +270,14 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   </div>
 </div>
 
+<!-- ═══ FIRST PLAYER PICK OVERLAY ═══ -->
+<div class="overlay" id="firstPickOverlay" style="display:none">
+  <div class="overlay-box" style="max-width:400px">
+    <div class="overlay-title">Chi Inizia?</div>
+    <div id="firstPickContent"></div>
+  </div>
+</div>
+
 <!-- ═══ CARDS DRAWER ═══ -->
 <div class="cards-drawer" id="cardsDrawer">
   <div class="drawer-header">
@@ -282,6 +303,37 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="log-entries" id="logEntries"></div>
 </div>
 <div class="scopa-flash" id="scopaFlash" style="display:none"></div>
+
+<!-- ═══ RULES DRAWER ═══ -->
+<div class="rules-drawer" id="rulesDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title">Rules</div>
+    <button class="drawer-close" onclick="toggleRules()">×</button>
+  </div>
+  <div class="rules-content">
+    <div class="rules-heading">-Points scored at end of round-</div>
+    <div class="rule-block"><span class="rule-name">Carte:</span> 1 point to the player with the most cards</div>
+    <div class="rule-block"><span class="rule-name">Denari:</span> 1 point to the player with the most coins</div>
+    <div class="rule-block"><span class="rule-name">Settebello:</span> 1 point to the player with the 7 of coins</div>
+    <div class="rule-block">
+      <div><span class="rule-name">Premiera:</span> 1 point to the player with the best hand</div>
+      <div class="rule-sub">each player separates their highest scoring card from each suit<br>Scores are as follows:</div>
+      <div class="primiera-scores">
+        <span>7</span><span>(21)</span>
+        <span>6</span><span>(18)</span>
+        <span>Ace</span><span>(16)</span>
+        <span>5</span><span>(15)</span>
+        <span>4</span><span>(14)</span>
+        <span>3</span><span>(13)</span>
+        <span>2</span><span>(12)</span>
+        <span>Face</span><span>(10)</span>
+      </div>
+    </div>
+    <div class="rules-note">*no points are scored for ties*</div>
+    <div class="rule-block" style="margin-top:14px"><span class="rule-name">Scopa:</span> Bonus point whenever you clear the table</div>
+  </div>
+</div>
+<button id="rulesBtn" onclick="toggleRules()">?</button>
 
 <script type="module">
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -376,7 +428,7 @@ function createGameState(names,dealer=0){
   const deck=shuffle(buildDeck()),table=deck.splice(0,4),hands=names.map(()=>deck.splice(0,3));
   return{deck,table,hands,captured:names.map(()=>[]),scopas:names.map(()=>0),
     currentTurn:(dealer+1)%names.length,dealer,round:1,scores:names.map(()=>0),
-    lastCapture:null,phase:'play',playerNames:[...names],
+    lastCapture:null,lastScopaBy:null,phase:'play',playerNames:[...names],
     log:[`Round 1 inizia. Turno di ${names[(dealer+1)%names.length]}.`]};
 }
 
@@ -440,7 +492,11 @@ function listenRoom(code){
     if(!snap.exists())return;
     const room=snap.val();
     if(room.players)renderPlayers(room.players);
+    if(room.picking&&!isHost&&document.getElementById('firstPickOverlay').style.display==='none'){
+      showFirstPickUI(room.players);
+    }
     if(room.started&&room.state){
+      document.getElementById('firstPickOverlay').style.display='none';
       if(lobbyUnsub){lobbyUnsub();lobbyUnsub=null;}
       const gs=sanitizeGS(room.state);
       const pi=gs.playerNames.indexOf(myName);
@@ -452,8 +508,30 @@ window.hostStart=async()=>{
   const snap=await get(ref(db,`rooms/${roomCode}`));if(!snap.exists())return;
   const room=snap.val();
   if(!room.players||room.players.length<2){setError('Servono almeno 2 giocatori.');return;}
-  const gs=createGameState(room.players);
-  await update(ref(db,`rooms/${roomCode}`),{state:gs,started:true,pushedBy:-1});
+  await update(ref(db,`rooms/${roomCode}`),{picking:true});
+  showFirstPickUI(room.players);
+};
+
+function showFirstPickUI(players){
+  const content=document.getElementById('firstPickContent');
+  if(isHost){
+    content.innerHTML=`<div style="font-size:13px;color:rgba(200,168,80,.6);text-align:center;margin-bottom:16px">Scegli chi inizia il gioco</div>${players.map((p,i)=>`<button class="btn btn-dark" onclick="confirmFirstPlayer(${i})">${p}</button>`).join('')}<button class="btn btn-ghost" style="margin-top:4px" onclick="confirmFirstPlayer(-1)">Casuale</button>`;
+  } else {
+    content.innerHTML=`<div class="waiting-msg" style="padding:20px 0">L'host sta scegliendo chi inizia…</div>`;
+  }
+  document.getElementById('firstPickOverlay').style.display='flex';
+}
+
+window.confirmFirstPlayer=async(idx)=>{
+  const snap=await get(ref(db,`rooms/${roomCode}`));if(!snap.exists())return;
+  const room=snap.val();
+  const players=room.players;
+  const n=players.length;
+  const firstPlayer=idx===-1?Math.floor(Math.random()*n):idx;
+  const dealer=(firstPlayer-1+n)%n;
+  const gs=createGameState(players,dealer);
+  document.getElementById('firstPickOverlay').style.display='none';
+  await update(ref(db,`rooms/${roomCode}`),{state:gs,started:true,picking:false,pushedBy:-1});
 };
 
 // ── Begin game ────────────────────────────────────────
@@ -487,6 +565,9 @@ function startListening(){
 
     // Clear any pending preview
     pendingCard=null;pendingCapture=null;pendingTableBefore=null;
+
+    // Flash scopa if one was scored this move
+    if(remote.lastScopaBy!==null&&remote.lastScopaBy!==undefined)flashScopa('SCOPA!');
 
     // Round-end state: show scoreboard
     if(remote.phase==='roundEnd'){
@@ -656,6 +737,7 @@ window.playCard=async()=>{
 function applyMove(gs,pIdx,card,selCaps){
   const caps=findCaptures(card,gs.table);
   let msg='';
+  gs.lastScopaBy=null;
   gs.hands[pIdx]=gs.hands[pIdx].filter(c=>c.id!==card.id);
   if(caps.length===0){
     gs.table.push(card);
@@ -669,7 +751,7 @@ function applyMove(gs,pIdx,card,selCaps){
     gs.captured[pIdx]=[...gs.captured[pIdx],card,...chosen];
     gs.lastCapture=pIdx;
     msg=`${gs.playerNames[pIdx]} cattura con ${card.value} di ${card.suit}.`;
-    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;msg+=' — SCOPA!';flashScopa('SCOPA!');}
+    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;gs.lastScopaBy=pIdx;msg+=' — SCOPA!';flashScopa('SCOPA!');}
   }
   gs.log=[...gs.log,msg];
   return advance(gs);
@@ -801,7 +883,7 @@ function proceedAfterRound(gs,newTotal,winner){
     const fd=shuffle(buildDeck()),tc=fd.splice(0,4),nh=gs.playerNames.map(()=>fd.splice(0,3));
     const newGs={...gs,deck:fd,table:tc,hands:nh,
       captured:gs.playerNames.map(()=>[]),scopas:gs.playerNames.map(()=>0),
-      round:nr,dealer:nd,currentTurn:(nd+1)%gs.playerNames.length,lastCapture:null,
+      round:nr,dealer:nd,currentTurn:(nd+1)%gs.playerNames.length,lastCapture:null,lastScopaBy:null,
       phase:'play',scores:[...newTotal],
       log:[...gs.log,`=== Round ${nr} inizia. ===`]};
     GS=newGs;
@@ -890,6 +972,7 @@ function sanitizeGS(gs){
 // ── UI helpers ────────────────────────────────────────
 window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
+window.toggleRules=()=>{document.getElementById('rulesDrawer').classList.toggle('open');};
 function flashScopa(msg){const el=document.getElementById('scopaFlash');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2000);}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 </script>
