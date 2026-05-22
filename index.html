@@ -52,16 +52,19 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .topbar-btns{display:flex;gap:8px}
 .sm-btn{background:none;border:1px solid rgba(200,168,80,.25);border-radius:5px;color:var(--gold);font-size:13px;padding:4px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px}
 .sm-btn:hover{background:rgba(200,168,80,.1)}
-.game-inner{flex:1;display:flex;flex-direction:column;padding:10px 14px;gap:10px;max-width:770px;margin:0 auto;width:100%;overflow-y:auto}
+.game-inner{flex:1;display:flex;flex-direction:column;padding:10px 14px;gap:10px;max-width:1040px;margin:0 auto;width:100%;overflow-y:auto}
 .opponents-area{display:flex;flex-wrap:wrap;gap:10px}
 .opp-hand{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.2);border-radius:8px;padding:8px 12px;flex:1;min-width:160px}
 .opp-name{font-size:15px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opp-name.active{color:#ffd700;font-weight:bold}
 .opp-stats{font-size:13px;color:rgba(200,168,80,.45)}
 .opp-cards{display:flex}
-.table-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border-radius:12px;padding:14px;border:1px solid rgba(200,168,80,.12);min-height:130px;overflow:hidden}
+.table-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border-radius:12px;padding:14px;border:1px solid rgba(200,168,80,.12);min-height:130px;overflow-x:auto;overflow-y:hidden}
+.table-area::-webkit-scrollbar{height:4px}
+.table-area::-webkit-scrollbar-track{background:transparent}
+.table-area::-webkit-scrollbar-thumb{background:rgba(200,168,80,.3);border-radius:2px}
 .table-label{font-size:12px;letter-spacing:3px;color:rgba(200,168,80,.4);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
-.table-cards{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.table-cards{display:flex;flex-wrap:nowrap;gap:8px;justify-content:center}
 .table-empty{color:rgba(200,168,80,.25);font-size:13px;font-style:italic}
 .capture-hint{font-size:11px;color:#ffd700;margin-top:8px;text-align:center;display:none}
 .hand-area{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 14px;border:1px solid rgba(200,168,80,.18)}
@@ -191,7 +194,8 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 @media(max-width:480px){
   .topbar-brand{display:none}
   .game-inner{gap:6px;padding-top:6px;padding-bottom:6px}
-  .table-area{min-height:80px}
+  .table-area{min-height:80px;overflow-x:hidden;overflow-y:hidden}
+  .table-cards{flex-wrap:wrap}
   .table-cards .card{width:75px!important;height:116px!important}
   .hand-area{padding:8px 10px}
   .hand-cards .card{width:85px!important;height:132px!important}
