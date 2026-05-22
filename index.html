@@ -1245,8 +1245,9 @@ window.openDrawer=playerIdx=>{
   document.getElementById('drawerBody').innerHTML=html||'<div style="color:rgba(200,168,80,.4);font-style:italic;font-size:13px">Nessuna carta raccolta.</div>';
   openDrawerIdx=playerIdx;
   document.getElementById('cardsDrawer').classList.add('open');
+  document.getElementById('cardsBackdrop').style.display='block';
 };
-window.closeDrawer=()=>{document.getElementById('cardsDrawer').classList.remove('open');openDrawerIdx=-1;};
+window.closeDrawer=()=>{document.getElementById('cardsDrawer').classList.remove('open');document.getElementById('cardsBackdrop').style.display='none';openDrawerIdx=-1;};
 
 // ── Presence ──────────────────────────────────────────
 function setupPresence(pi){
@@ -1327,6 +1328,7 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 </script>
 <div id="rulesBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="toggleRules()"></div>
 <div id="deckBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="toggleDeckChart()"></div>
+<div id="cardsBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="closeDrawer()"></div>
 <div id="bottomBtns">
   <button class="bb-btn" onclick="toggleDeckChart()" title="Mazzo"><span class="card-shape-icon"></span></button>
   <div style="position:relative">
