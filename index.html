@@ -189,8 +189,13 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .go-subtitle{font-size:15px;color:var(--gold);margin-bottom:22px;font-style:italic}
 .go-table-wrap{width:100%;max-width:560px;background:#120e00;border:1px solid rgba(200,168,80,.38);border-radius:10px;overflow:hidden;margin-bottom:22px;padding:0 20px}
 @media(max-width:480px){
+  .topbar-brand{display:none}
+  .game-inner{gap:6px;padding-top:6px;padding-bottom:6px}
+  .table-area{min-height:80px}
   .table-cards .card{width:60px!important;height:93px!important}
-  .opp-hand{min-width:110px;padding:6px 8px}
+  .opp-hand{min-width:110px;padding:4px 8px}
+  .opp-cards{padding-left:10px!important}
+  .opp-cards .card-back{width:30px!important;height:46px!important;margin-left:-10px!important}
   .opp-name{font-size:13px}
   .opp-stats{font-size:11px}
 }
@@ -244,7 +249,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="topbar">
     <div class="topbar-left">
       <span id="topSuits"></span>
-      <span style="font-family:'IM Fell English SC',serif;font-size:15px;margin-left:6px">Scopa</span>
+      <span class="topbar-brand" style="font-family:'IM Fell English SC',serif;font-size:15px;margin-left:6px">Scopa</span>
     </div>
     <div class="topbar-info" id="topInfo"></div>
     <div class="topbar-btns">
