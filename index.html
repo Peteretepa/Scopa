@@ -83,6 +83,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .card.selected{transform:translateY(-8px);box-shadow:0 0 0 2.5px #c0392b,0 6px 16px rgba(0,0,0,.5)!important}
 .card.highlight{box-shadow:0 0 0 2.5px #2a8a2a,0 4px 12px rgba(0,0,0,.4)!important}
 .card.cap-selected{transform:translateY(-5px);box-shadow:0 0 0 2.5px #2a8a2a,0 6px 16px rgba(0,0,0,.4)!important}
+.card.can-switch{box-shadow:0 0 0 2px rgba(200,168,80,.55),0 4px 12px rgba(0,0,0,.35)!important;opacity:.8}
 .card.faded{opacity:.5;cursor:default}
 .card-face{background:linear-gradient(155deg,#fdf8ef 60%,#f4e8c8 100%);border:1.5px solid #c8b080;width:100%;height:100%;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:4px;overflow:hidden;position:relative}
 .card-face::after{content:'';position:absolute;inset:3px;border:.5px solid rgba(180,155,100,.4);border-radius:4px;pointer-events:none}
@@ -618,18 +619,18 @@ function render(){
     tc.innerHTML=tableToShow.map(c=>{
       const isPlayed=pendingCard&&c.id===pendingCard.id;
       const isCapturing=pendingCapIds.has(c.id);
-      const canCap=!pendingCard&&selectedCard&&possibleCaptures.some(cap=>cap.some(x=>x.id===c.id));
-      const capSel=!pendingCard&&selectedCaptures.some(cap=>cap.some(x=>x.id===c.id));
+      const capSel=!pendingCard&&selectedCaptures.length>0&&selectedCaptures[0].some(x=>x.id===c.id);
+      const canSwitch=!pendingCard&&selectedCard&&!capSel&&possibleCaptures.some(cap=>cap.some(x=>x.id===c.id));
       let cls='card';
-      if(isPlayed)       cls+=' selected';
-      if(isCapturing)    cls+=' cap-selected';
-      if(canCap&&!capSel)cls+=' highlight clickable';
-      if(capSel)         cls+=' cap-selected clickable';
+      if(isPlayed)    cls+=' selected';
+      if(isCapturing) cls+=' cap-selected';
+      if(capSel)      cls+=' cap-selected clickable';
+      if(canSwitch)   cls+=' can-switch clickable';
       return `<div class="${cls}" style="width:62px;height:96px" onclick="tableCardClick('${c.id}')">${cardHTML(c)}</div>`;
     }).join('');
   }
   const hint=document.getElementById('captureHint');
-  if(selectedCard&&possibleCaptures.length>1){hint.style.display='block';hint.textContent='Seleziona le carte da catturare, poi clicca Cattura';}
+  if(selectedCard&&possibleCaptures.length>1){hint.style.display='block';hint.textContent='Click a gold card to switch which group you capture';}
   else hint.style.display='none';
 
   // Hand
@@ -677,16 +678,22 @@ window.handCardClick=id=>{
   if(GS.currentTurn!==PI||pendingCard)return;
   const card=GS.hands[PI].find(c=>c.id===id);if(!card)return;
   if(selectedCard?.id===id){selectedCard=null;possibleCaptures=[];selectedCaptures=[];}
-  else{selectedCard=card;selectedCaptures=[];possibleCaptures=findCaptures(card,GS.table);}
+  else{
+    selectedCard=card;
+    possibleCaptures=findCaptures(card,GS.table);
+    if(possibleCaptures.length>0){
+      const exact=possibleCaptures.find(c=>c.length===1&&c[0].value===card.value);
+      selectedCaptures=[exact||possibleCaptures[0]];
+    } else {
+      selectedCaptures=[];
+    }
+  }
   render();
 };
 window.tableCardClick=id=>{
-  if(!selectedCard)return;
+  if(!selectedCard||possibleCaptures.length<=1)return;
   const cap=possibleCaptures.find(cap=>cap.some(c=>c.id===id));if(!cap)return;
-  const key=cap.map(c=>c.id).sort().join(',');
-  const already=selectedCaptures.find(sc=>sc.map(c=>c.id).sort().join(',')===key);
-  if(already)selectedCaptures=selectedCaptures.filter(sc=>sc.map(c=>c.id).sort().join(',')!==key);
-  else selectedCaptures=[...selectedCaptures,cap];
+  selectedCaptures=[cap];
   render();
 };
 
