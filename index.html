@@ -165,6 +165,8 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 
 /* ── CARD SHAPE ICON ── */
 .card-shape-icon{display:inline-block;width:14px;height:20px;background:rgba(200,168,80,.12);border:1.5px solid rgba(200,168,80,.65);border-radius:3px;vertical-align:middle;flex-shrink:0}
+.card-icon-nested{display:inline-flex;align-items:center;justify-content:center;width:22px;height:32px;background:rgba(0,0,0,.55);border:1.5px solid rgba(200,168,80,.6);border-radius:4px;vertical-align:middle;flex-shrink:0}
+.card-icon-nested>span{display:block;width:11px;height:16px;background:rgba(200,168,80,.15);border:1.5px solid rgba(200,168,80,.65);border-radius:2px}
 
 /* ── DECK CHART DRAWER (slides from left) ── */
 .deck-drawer{position:fixed;top:0;left:-100%;width:min(870px,98vw);height:100vh;background:#0e0a00;border-right:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:left .3s ease;overflow:hidden}
@@ -469,6 +471,7 @@ let roomCode=null,myName='',isHost=false,stateUnsub=null;
 let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
 // Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
+let openDrawerIdx=-1;
 let readyUnsub=null; // unsubscriber for the per-round ready listener
 let lastShownRoundEnd=-1; // prevents re-processing same roundEnd when ready:null fires the listener
 let gameTotalsAccum=null; // accumulated per-category points across all rounds, for game-over table
@@ -942,7 +945,7 @@ function showRoundScoreboard(gs){
 
   // View-cards buttons
   document.getElementById('roundViewBtns').innerHTML=
-    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})"><span class="card-shape-icon"></span> Carte di ${name}</button>`).join('');
+    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})"><span class="card-icon-nested"><span></span></span> Carte di ${name}</button>`).join('');
 
   document.getElementById('readyBtn').disabled=false;
   document.getElementById('waitingPlayers').textContent='';
@@ -1048,6 +1051,8 @@ function endGame(gs,wi){
 // ── Cards Drawer ──────────────────────────────────────
 window.openDrawer=playerIdx=>{
   if(!roundCapturedSnapshot)return;
+  const drawer=document.getElementById('cardsDrawer');
+  if(openDrawerIdx===playerIdx&&drawer.classList.contains('open')){closeDrawer();return;}
   const name=GS?GS.playerNames[playerIdx]:'';
   const cards=roundCapturedSnapshot[playerIdx]||[];
   document.getElementById('drawerTitle').textContent=`Carte di ${name}`;
@@ -1082,9 +1087,10 @@ window.openDrawer=playerIdx=>{
   }
 
   document.getElementById('drawerBody').innerHTML=html||'<div style="color:rgba(200,168,80,.4);font-style:italic;font-size:13px">Nessuna carta raccolta.</div>';
+  openDrawerIdx=playerIdx;
   document.getElementById('cardsDrawer').classList.add('open');
 };
-window.closeDrawer=()=>document.getElementById('cardsDrawer').classList.remove('open');
+window.closeDrawer=()=>{document.getElementById('cardsDrawer').classList.remove('open');openDrawerIdx=-1;};
 
 // ── Firebase helpers ──────────────────────────────────
 async function pushState(gs){
