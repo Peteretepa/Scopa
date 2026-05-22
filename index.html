@@ -493,6 +493,7 @@ let selectedCard=null,selectedCaptures=[],possibleCaptures=[];
 let roomCode=null,myName='',isHost=false,stateUnsub=null;
 let disconnectedNames=[];
 let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
+let _lastAdvanceDealt=false;
 // Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
 let openDrawerIdx=-1;
@@ -724,7 +725,7 @@ function startListening(){
     selectedCard=null;selectedCaptures=[];possibleCaptures=[];
     if(!document.getElementById('sGame').classList.contains('active'))showScreen('sGame');
     if(isNewRound){SFX.shuffle();setTimeout(_deal3,1600);}
-    else if(isMidDeal)_deal3();
+    else if(isMidDeal){await new Promise(r=>setTimeout(r,1000));_deal3();}
     render();
   });
 }
@@ -884,6 +885,7 @@ window.playCard=async()=>{
 
   pendingCard=null;pendingCapture=null;pendingTableBefore=null;
   let gs=deepCopy(GS);
+  _lastAdvanceDealt=false;
   gs=applyMove(gs,pIdx,cardPlayed,chosenCap?[chosenCap]:[]);
   if(!gs)return;
   GS=gs;
@@ -900,6 +902,7 @@ window.playCard=async()=>{
     if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
+    if(_lastAdvanceDealt){await new Promise(r=>setTimeout(r,1000));_deal3();}
     render();
   }
 };
@@ -933,9 +936,9 @@ function advance(gs){
   if(!empty){gs.currentTurn=(gs.currentTurn+1)%gs.playerNames.length;return gs;}
 
   if(gs.deck.length>=gs.playerNames.length*3){
+    _lastAdvanceDealt=true;
     for(let i=0;i<gs.playerNames.length;i++)gs.hands[i]=gs.deck.splice(0,3);
     gs.log.push('Nuove carte distribuite.');
-    _deal3();
     gs.currentTurn=(gs.currentTurn+1)%gs.playerNames.length;
     return gs;
   }
