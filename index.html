@@ -524,7 +524,7 @@ if(_AC){
 const _bgm1=new Audio('background.mp3');
 const _bgm2=new Audio('background.mp3');
 let _activeBgm=_bgm1,_nextBgm=_bgm2;
-let _bgmTargetVol=0.05; // slider 0-1 maps to actual 0-0.1
+let _bgmTargetVol=0.04; // slider 0-1 maps to actual 0-0.08
 let _bgmStarted=false,_crossfading=false;
 // Route through Web Audio so GainNode controls volume on iOS (audio.volume is read-only there)
 let _bgmGain,_bgm1Gain,_bgm2Gain;
@@ -560,15 +560,15 @@ function _doCrossfade(){
 function _loadVol(){
   const mv=parseFloat(localStorage.getItem('vol_music')??'0.5');
   const sv=parseFloat(localStorage.getItem('vol_sfx')??'0.5');
-  _bgmTargetVol=mv*0.1;
+  _bgmTargetVol=mv*0.08;
   if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else _activeBgm.volume=_bgmTargetVol;
-  if(_sfxGain)_sfxGain.gain.value=sv;
+  if(_sfxGain)_sfxGain.gain.value=sv*0.8;
   const ms=document.getElementById('volMusic');if(ms)ms.value=mv;
   const ss=document.getElementById('volSfx');if(ss)ss.value=sv;
 }
 function _saveVol(type,val){localStorage.setItem('vol_'+type,val);}
-window.setMusicVol=v=>{_bgmTargetVol=parseFloat(v)*0.1;if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else if(!_crossfading)_activeBgm.volume=_bgmTargetVol;_saveVol('music',v);};
-window.setSfxVol=v=>{if(_sfxGain)_sfxGain.gain.value=parseFloat(v);_saveVol('sfx',v);};
+window.setMusicVol=v=>{_bgmTargetVol=parseFloat(v)*0.08;if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else if(!_crossfading)_activeBgm.volume=_bgmTargetVol;_saveVol('music',v);};
+window.setSfxVol=v=>{if(_sfxGain)_sfxGain.gain.value=parseFloat(v)*0.8;_saveVol('sfx',v);};
 let _musicMuted=false,_sfxMuted=false;
 window.toggleMuteMusic=()=>{
   _musicMuted=!_musicMuted;
@@ -582,13 +582,13 @@ window.toggleMuteSfx=()=>{
   const btn=document.getElementById('muteSfx'),sl=document.getElementById('volSfx');
   btn.textContent=_sfxMuted?'OFF':'ON';btn.classList.toggle('muted',_sfxMuted);
   sl.disabled=_sfxMuted;sl.style.opacity=_sfxMuted?'0.35':'';
-  if(_sfxGain)_sfxGain.gain.value=_sfxMuted?0:parseFloat(sl.value);
+  if(_sfxGain)_sfxGain.gain.value=_sfxMuted?0:parseFloat(sl.value)*0.8;
 };
 window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 function _snd(url,vol=1){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];if(vol!==1){const g=_AC.createGain();g.gain.value=vol;s.connect(g);g.connect(_sfxGain||_AC.destination);}else s.connect(_sfxGain||_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
 function _startDealAnim(){render({dealAnim:true});setTimeout(_deal3,200);setTimeout(()=>render(),650);}
-const SFX={card:_snd('Drop.wav',2.0),deal:_snd('place.wav'),capture:_snd('slide.wav',0.8),scopa:_snd('Sweep.mp3',0.5),shuffle:_snd('shuffle.wav')};
+const SFX={card:_snd('Drop.wav',4.0),deal:_snd('place.wav'),capture:_snd('slide.wav',0.8),scopa:_snd('Sweep.mp3',0.5),shuffle:_snd('shuffle.wav')};
 window._testSound=name=>SFX[name]?.();
 setTimeout(_loadVol,0);
 
