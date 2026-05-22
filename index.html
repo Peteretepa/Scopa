@@ -179,6 +179,9 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 #deckBtn{position:fixed;bottom:20px;left:20px;z-index:250;width:32px;height:46px;border-radius:5px;background:rgba(200,168,80,.12);border:1px solid rgba(200,168,80,.38);color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;font-size:11px;font-family:'IM Fell English SC',serif}
 #deckBtn:hover{background:rgba(200,168,80,.22)}
 
+/* ── DISCONNECT BANNER ── */
+.disconnect-banner{position:fixed;top:0;left:0;right:0;z-index:400;background:rgba(100,18,18,.97);color:#ffd700;text-align:center;padding:11px 20px;font-family:'IM Fell English SC',serif;font-size:14px;letter-spacing:1px;border-bottom:1px solid rgba(200,168,80,.3)}
+
 /* ── GAME OVER ── */
 #sGameOver{flex-direction:column;align-items:center;justify-content:flex-start;padding:36px 20px 32px;overflow-y:auto;text-align:center;background:radial-gradient(ellipse at 50% 40%,#2a1800 0%,var(--bg) 70%)}
 .go-sub{font-size:12px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
@@ -368,10 +371,11 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 </div>
 <button id="deckBtn" onclick="toggleDeckChart()"><span class="card-shape-icon"></span></button>
 <button id="rulesBtn" onclick="toggleRules()">?</button>
+<div id="disconnectBanner" class="disconnect-banner" style="display:none"></div>
 
 <script type="module">
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, get, update, onValue, remove }
+import { getDatabase, ref, set, get, update, onValue, remove, onDisconnect }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -468,6 +472,7 @@ function createGameState(names,dealer=0){
 let GS=null,PI=0,totalScores=[];
 let selectedCard=null,selectedCaptures=[],possibleCaptures=[];
 let roomCode=null,myName='',isHost=false,stateUnsub=null;
+let disconnectedNames=[];
 let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
 // Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
@@ -513,7 +518,26 @@ window.joinRoom=async()=>{
   const snap=await get(ref(db,`rooms/${code}`));
   if(!snap.exists()){setError('Stanza non trovata.');return;}
   const room=snap.val();
-  if(room.started){setError('La partita è già iniziata.');return;}
+
+  if(room.started&&room.state){
+    // Game in progress — only allow reconnect by matching name
+    const gs=sanitizeGS(deepCopy(room.state));
+    const pi=gs.playerNames.indexOf(name);
+    if(pi<0){setError('La partita è già iniziata.');return;}
+    // Check if game is abandoned (all players disconnected)
+    const connected=room.connected||{};
+    const anyConnected=Object.keys(connected).length>0&&gs.playerNames.some((_,i)=>connected[String(i)]===true);
+    if(!anyConnected&&Object.keys(connected).length>0){
+      await remove(ref(db,`rooms/${code}`));
+      setError('La partita è finita. Crea una nuova stanza.');
+      return;
+    }
+    myName=name;isHost=(pi===0);roomCode=code;
+    beginGame(gs,pi);
+    setError('');
+    return;
+  }
+
   if(room.players&&room.players.length>=4){setError('Stanza piena (max 4 giocatori).');return;}
   const players=[...(room.players||[]),name];
   myName=name;isHost=false;roomCode=code;
@@ -593,9 +617,10 @@ function beginGame(gs,pi){
   selectedCard=null;selectedCaptures=[];possibleCaptures=[];
   lastShownRoundEnd=-1;gameTotalsAccum=null;
   showScreen('sGame');
-  if(roomCode)startListening();
+  if(roomCode){setupPresence(pi);startListening();}
   SFX.deal();
-  render();
+  if(GS.phase==='roundEnd'){lastShownRoundEnd=GS.round;showRoundScoreboard(GS);}
+  else render();
 }
 
 let listening=false;
@@ -605,6 +630,9 @@ function startListening(){
   stateUnsub=onValue(ref(db,`rooms/${roomCode}`),async snap=>{
     if(!snap.exists())return;
     const room=snap.val();
+
+    // Always update disconnect banner regardless of who pushed
+    updateDisconnectUI(room);
 
     // Game-over screen: only allow play-again transitions; ignore all game state replays
     if(document.getElementById('sGameOver').classList.contains('active')){
@@ -669,6 +697,8 @@ function stopListening(){
   if(!listening)return;
   listening=false;
   if(stateUnsub){stateUnsub();stateUnsub=null;}
+  disconnectedNames=[];
+  document.getElementById('disconnectBanner').style.display='none';
 }
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -791,6 +821,7 @@ window.tableCardClick=id=>{
 
 window.playCard=async()=>{
   if(!selectedCard)return;
+  if(disconnectedNames.length>0)return;
   const pIdx=GS.currentTurn;
   const cardPlayed=selectedCard;
   const caps=findCaptures(cardPlayed,GS.table);
@@ -1091,6 +1122,27 @@ window.openDrawer=playerIdx=>{
   document.getElementById('cardsDrawer').classList.add('open');
 };
 window.closeDrawer=()=>{document.getElementById('cardsDrawer').classList.remove('open');openDrawerIdx=-1;};
+
+// ── Presence ──────────────────────────────────────────
+function setupPresence(pi){
+  const connRef=ref(db,`rooms/${roomCode}/connected/${pi}`);
+  onDisconnect(connRef).set(false);
+  set(connRef,true);
+}
+
+function updateDisconnectUI(room){
+  if(!GS)return;
+  const connected=room.connected||{};
+  disconnectedNames=GS.playerNames.filter((_,i)=>i!==PI&&connected[String(i)]===false);
+  const banner=document.getElementById('disconnectBanner');
+  if(disconnectedNames.length>0){
+    const names=disconnectedNames.join(' & ');
+    banner.textContent=names+(disconnectedNames.length===1?' disconnected':' disconnected');
+    banner.style.display='block';
+  } else {
+    banner.style.display='none';
+  }
+}
 
 // ── Firebase helpers ──────────────────────────────────
 async function pushState(gs){
