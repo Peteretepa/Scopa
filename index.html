@@ -516,7 +516,7 @@ try{_AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
 if(_AC){_sfxGain=_AC.createGain();_sfxGain.connect(_AC.destination);}
 const _BUF={};
 if(_AC){
-  ['place.wav','slide.wav','sweep.wav','shuffle.wav'].forEach(async url=>{
+  ['place.wav','slide.wav','Sweep.mp3','shuffle.wav','Drop.wav'].forEach(async url=>{
     try{const r=await fetch(url);_BUF[url]=await _AC.decodeAudioData(await r.arrayBuffer());}catch(e){}
   });
 }
@@ -588,7 +588,7 @@ window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.sty
 function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_sfxGain||_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
 function _startDealAnim(){render({dealAnim:true});setTimeout(_deal3,200);setTimeout(()=>render(),650);}
-const SFX={card:_snd('place.wav'),deal:_snd('place.wav'),capture:_snd('slide.wav'),scopa:_snd('sweep.wav'),shuffle:_snd('shuffle.wav')};
+const SFX={card:_snd('Drop.wav'),deal:_snd('place.wav'),capture:_snd('slide.wav'),scopa:_snd('Sweep.mp3'),shuffle:_snd('shuffle.wav')};
 setTimeout(_loadVol,0);
 
 // ── Boot ──────────────────────────────────────────────
