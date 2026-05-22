@@ -64,7 +64,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .table-cards{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .table-empty{color:rgba(200,168,80,.25);font-size:13px;font-style:italic}
 .capture-hint{font-size:11px;color:#ffd700;margin-top:8px;text-align:center;display:none}
-.hand-area{background:rgba(0,0,0,.22);border-radius:12px;padding:12px 14px;border:1px solid rgba(200,168,80,.18)}
+.hand-area{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 14px;border:1px solid rgba(200,168,80,.18)}
 .hand-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .hand-label{font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;font-family:'IM Fell English SC',serif}
 .hand-stats{font-size:13px;color:rgba(200,168,80,.45)}
@@ -191,7 +191,6 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 @media(max-width:480px){
   .topbar-brand{display:none}
   .game-inner{gap:6px;padding-top:6px;padding-bottom:6px}
-  .hand-label{display:none}
   .table-area{min-height:80px}
   .table-cards .card{width:75px!important;height:116px!important}
   .hand-area{padding:8px 10px}
@@ -262,14 +261,14 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="game-inner">
     <div class="opponents-area" id="opponentsArea"></div>
     <div class="table-area">
-      <div class="table-label">Tavolo</div>
+
       <div class="table-cards" id="tableCards"></div>
       <div class="capture-hint" id="captureHint"></div>
     </div>
     <div class="hand-area">
       <div class="hand-header">
         <div>
-          <div class="hand-label">La tua mano</div>
+
           <div class="hand-stats" id="handStats"></div>
         </div>
         <div id="actionArea"></div>
