@@ -16,7 +16,7 @@ body{background:var(--bg);font-family:'IM Fell English',Georgia,serif;color:var(
 .screen{display:none;min-height:100vh}
 .screen.active{display:flex}
 
-/* LOBBY */
+/* ── LOBBY ── */
 #sLobby{flex-direction:column;align-items:center;justify-content:center;padding:20px;
   background:radial-gradient(ellipse at 30% 20%,#1a3a10 0%,transparent 55%),
              radial-gradient(ellipse at 70% 80%,#2a1010 0%,transparent 55%),var(--bg)}
@@ -42,7 +42,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .error-msg{color:#e74c3c;font-size:12px;text-align:center;margin-top:10px;font-family:Georgia,serif;min-height:18px}
 .waiting-msg{text-align:center;color:rgba(200,168,80,.6);font-size:13px;font-style:italic}
 
-/* GAME */
+/* ── GAME ── */
 #sGame{flex-direction:column;background:radial-gradient(ellipse at 50% 50%,var(--felt2) 0%,var(--bg) 100%)}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid rgba(200,168,80,.18);background:rgba(0,0,0,.35);flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--gold)}
@@ -77,7 +77,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .score-val{font-size:20px;font-weight:bold;color:var(--parchment)}
 .score-val.active{color:#ffd700}
 
-/* CARDS */
+/* ── CARDS ── */
 .card{position:relative;border-radius:7px;cursor:default;flex-shrink:0;transition:transform .15s,box-shadow .15s}
 .card.clickable{cursor:pointer}
 .card.selected{transform:translateY(-8px);box-shadow:0 0 0 2.5px #c0392b,0 6px 16px rgba(0,0,0,.5)!important}
@@ -89,7 +89,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .card-back{background:repeating-linear-gradient(45deg,#8b1a1a 0,#8b1a1a 4px,#6b1010 4px,#6b1010 8px);border:1.5px solid #5a0e0e;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .card-back-inner{border:1.5px solid rgba(255,210,80,.3);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,210,80,.4);font-size:16px}
 
-/* ROUND SCOREBOARD OVERLAY */
+/* ── ROUND SCOREBOARD OVERLAY ── */
 .round-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:150;display:flex;align-items:center;justify-content:center}
 .round-box{background:#120e00;border:1px solid rgba(200,168,80,.45);border-radius:14px;padding:0;width:92%;max-width:560px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column}
 .round-box-header{padding:18px 24px 14px;border-bottom:1px solid rgba(200,168,80,.2);text-align:center}
@@ -116,7 +116,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .ready-btn:disabled{background:#3a2a2a;color:rgba(200,168,80,.4);cursor:default;filter:none}
 .waiting-players{font-size:11px;color:rgba(200,168,80,.5);font-style:italic}
 
-/* CARDS DRAWER */
+/* ── CARDS DRAWER (slides in from right) ── */
 .cards-drawer{position:fixed;top:0;right:-100%;width:min(380px,95vw);height:100vh;background:#0e0a00;border-left:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:right .3s ease;overflow:hidden}
 .cards-drawer.open{right:0}
 .drawer-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(200,168,80,.2)}
@@ -129,7 +129,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .primiera-box{background:rgba(200,168,80,.06);border:1px solid rgba(200,168,80,.2);border-radius:6px;padding:8px 12px;font-size:12px;color:rgba(200,168,80,.8);margin-top:10px}
 .primiera-row{display:flex;justify-content:space-between;padding:2px 0}
 
-/* MISC OVERLAYS */
+/* ── MISC OVERLAYS ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;display:flex;align-items:center;justify-content:center}
 .overlay-box{background:#1a1000;border:1px solid rgba(200,168,80,.4);border-radius:12px;padding:28px;min-width:280px;max-width:360px;width:90%}
 .overlay-title{font-family:'IM Fell English SC',serif;font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:16px}
@@ -145,7 +145,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .scopa-flash{position:fixed;top:28%;left:50%;transform:translateX(-50%);z-index:300;background:var(--red2);color:#ffd700;font-size:38px;font-weight:bold;padding:14px 36px;border-radius:10px;letter-spacing:5px;box-shadow:0 4px 24px rgba(176,32,32,.7);font-family:'IM Fell English SC',serif;animation:flashIn .3s ease;pointer-events:none;white-space:nowrap}
 @keyframes flashIn{from{opacity:0;transform:translateX(-50%) scale(.7)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 
-/* GAME OVER */
+/* ── GAME OVER ── */
 #sGameOver{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;background:radial-gradient(ellipse at 50% 40%,#2a1800 0%,var(--bg) 70%)}
 .go-sub{font-size:12px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
 .go-winner{font-size:56px;color:#ffd700;margin-bottom:6px;text-shadow:0 0 30px rgba(255,215,0,.4)}
@@ -155,7 +155,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 </head>
 <body>
 
-<!-- LOBBY -->
+<!-- ═══ LOBBY ═══ -->
 <div id="sLobby" class="screen active">
   <div>
     <div class="title-sub">Il Gioco della</div>
@@ -165,19 +165,19 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="lobby-card">
     <div id="stepMain">
       <label class="field-label">Il tuo nome</label>
-      <input class="txt" id="nameInput" placeholder="Nome..." maxlength="18"/>
+      <input class="txt" id="nameInput" placeholder="Nome…" maxlength="18"/>
       <button class="btn btn-red"   onclick="showCreate()">Crea Stanza</button>
       <button class="btn btn-green" onclick="showJoin()">Entra nella Stanza</button>
     </div>
     <div id="stepCreate" style="display:none">
       <button class="btn btn-red"   onclick="createRoom()">Crea Stanza</button>
-      <button class="btn btn-ghost" onclick="backToMain()">Indietro</button>
+      <button class="btn btn-ghost" onclick="backToMain()">← Indietro</button>
     </div>
     <div id="stepJoin" style="display:none">
       <label class="field-label">Codice Stanza</label>
       <input class="txt code-input" id="codeInput" placeholder="XXXX" maxlength="4" oninput="this.value=this.value.toUpperCase()"/>
       <button class="btn btn-green" onclick="joinRoom()">Entra</button>
-      <button class="btn btn-ghost" onclick="backToMain()">Indietro</button>
+      <button class="btn btn-ghost" onclick="backToMain()">← Indietro</button>
     </div>
     <div id="stepRoom" style="display:none">
       <div style="text-align:center;margin-bottom:18px">
@@ -190,13 +190,13 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
       <div id="hostControls" style="display:none">
         <button class="btn btn-red" id="startBtn" onclick="hostStart()">Inizia il Gioco</button>
       </div>
-      <div id="guestWait" class="waiting-msg" style="display:none">In attesa dell'host...</div>
+      <div id="guestWait" class="waiting-msg" style="display:none">In attesa dell'host…</div>
     </div>
     <div class="error-msg" id="errorMsg"></div>
   </div>
 </div>
 
-<!-- GAME -->
+<!-- ═══ GAME ═══ -->
 <div id="sGame" class="screen">
   <div class="topbar">
     <div class="topbar-left">
@@ -230,7 +230,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   </div>
 </div>
 
-<!-- GAME OVER -->
+<!-- ═══ GAME OVER ═══ -->
 <div id="sGameOver" class="screen">
   <div class="go-sub">Partita Finita</div>
   <div class="go-winner" id="goWinner"></div>
@@ -239,7 +239,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <button class="btn btn-red" style="max-width:220px" onclick="location.reload()">Nuova Partita</button>
 </div>
 
-<!-- ROUND SCOREBOARD -->
+<!-- ═══ ROUND SCOREBOARD ═══ -->
 <div class="round-overlay" id="roundOverlay" style="display:none">
   <div class="round-box">
     <div class="round-box-header">
@@ -257,11 +257,11 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   </div>
 </div>
 
-<!-- CARDS DRAWER -->
+<!-- ═══ CARDS DRAWER ═══ -->
 <div class="cards-drawer" id="cardsDrawer">
   <div class="drawer-header">
     <div class="drawer-title" id="drawerTitle">Carte Raccolte</div>
-    <button class="drawer-close" onclick="closeDrawer()">x</button>
+    <button class="drawer-close" onclick="closeDrawer()">×</button>
   </div>
   <div class="drawer-body" id="drawerBody"></div>
 </div>
@@ -277,7 +277,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 <div class="log-panel" id="logPanel" style="display:none">
   <div class="log-header">
     <div class="log-title">Registro Mosse</div>
-    <button class="log-close" onclick="toggleLog()">x</button>
+    <button class="log-close" onclick="toggleLog()">×</button>
   </div>
   <div class="log-entries" id="logEntries"></div>
 </div>
@@ -300,7 +300,7 @@ const firebaseConfig = {
 const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 
-// Constants
+// ── Constants ────────────────────────────────────────
 const SUITS      = ['Coppe','Denari','Spade','Bastoni'];
 const VALS       = [1,2,3,4,5,6,7,8,9,10];
 const ITAL       = ['','Asso','Due','Tre','Quattro','Cinque','Sei','Sette','Fante','Cavallo','Re'];
@@ -308,17 +308,17 @@ const SUIT_COLOR = {Coppe:'#c0392b',Denari:'#b8880a',Spade:'#1c2e40',Bastoni:'#1
 
 function suitSVG(suit,sz=16){
   const c=SUIT_COLOR[suit];
-  if(suit==='Coppe')  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20"><path d="M5,14 Q5,10 10,8 Q15,10 15,14 L13,14 Q13,11 10,10 Q7,11 7,14Z" fill="'+c+'"/><rect x="9" y="14" width="2" height="3" fill="'+c+'"/><rect x="7" y="17" width="6" height="1.5" rx=".5" fill="'+c+'"/></svg>';
-  if(suit==='Denari') return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="'+c+'" opacity=".15" stroke="'+c+'" stroke-width="1.5"/><circle cx="10" cy="10" r="4.5" fill="'+c+'" opacity=".35"/><circle cx="10" cy="10" r="2.2" fill="'+c+'"/></svg>';
-  if(suit==='Spade')  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20"><path d="M10,2 L14,10 Q16,13 13,13 Q12,13 11.5,12 Q11,14 12,16 L8,16 Q9,14 8.5,12 Q8,13 7,13 Q4,13 6,10Z" fill="'+c+'"/></svg>';
-  return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3" fill="'+c+'"/><circle cx="6.5" cy="12.5" r="3" fill="'+c+'"/><circle cx="13.5" cy="12.5" r="3" fill="'+c+'"/><rect x="9" y="14" width="2" height="3" fill="'+c+'"/></svg>';
+  if(suit==='Coppe')  return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><path d="M5,14 Q5,10 10,8 Q15,10 15,14 L13,14 Q13,11 10,10 Q7,11 7,14Z" fill="${c}"/><rect x="9" y="14" width="2" height="3" fill="${c}"/><rect x="7" y="17" width="6" height="1.5" rx=".5" fill="${c}"/></svg>`;
+  if(suit==='Denari') return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="${c}" opacity=".15" stroke="${c}" stroke-width="1.5"/><circle cx="10" cy="10" r="4.5" fill="${c}" opacity=".35"/><circle cx="10" cy="10" r="2.2" fill="${c}"/></svg>`;
+  if(suit==='Spade')  return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><path d="M10,2 L14,10 Q16,13 13,13 Q12,13 11.5,12 Q11,14 12,16 L8,16 Q9,14 8.5,12 Q8,13 7,13 Q4,13 6,10Z" fill="${c}"/></svg>`;
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3" fill="${c}"/><circle cx="6.5" cy="12.5" r="3" fill="${c}"/><circle cx="13.5" cy="12.5" r="3" fill="${c}"/><rect x="9" y="14" width="2" height="3" fill="${c}"/></svg>`;
 }
 
-// Deck
-function buildDeck(){const d=[];for(const s of SUITS)for(const v of VALS)d.push({suit:s,value:v,id:v+'-'+s});return d;}
+// ── Deck ─────────────────────────────────────────────
+function buildDeck(){const d=[];for(const s of SUITS)for(const v of VALS)d.push({suit:s,value:v,id:`${v}-${s}`});return d;}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-// Game logic
+// ── Game logic ────────────────────────────────────────
 function findCaptures(card,table){
   const exact=table.filter(t=>t.value===card.value);
   if(exact.length>0) return exact.map(t=>[t]);
@@ -333,12 +333,14 @@ function primieraScore(cards){
   return vals.filter(Boolean).length===4?vals.reduce((a,x)=>a+x,0):null;
 }
 function primieraBestCards(cards){
+  // Returns the best card per suit used in primiera calculation
   const best={Coppe:null,Denari:null,Spade:null,Bastoni:null};
   for(const c of cards){const p=primVal(c.value);if(!best[c.suit]||p>primVal(best[c.suit].value))best[c.suit]=c;}
   return Object.values(best).filter(Boolean);
 }
 
 function calcRoundDetail(gs){
+  // Returns detailed breakdown for scoreboard
   const n=gs.playerNames.length;
   const cc=gs.captured.map(c=>c.length);
   const mx=Math.max(...cc);
@@ -375,29 +377,30 @@ function createGameState(names,dealer=0){
   return{deck,table,hands,captured:names.map(()=>[]),scopas:names.map(()=>0),
     currentTurn:(dealer+1)%names.length,dealer,round:1,scores:names.map(()=>0),
     lastCapture:null,phase:'play',playerNames:[...names],
-    log:['Round 1 inizia. Turno di '+names[(dealer+1)%names.length]+'.']};
+    log:[`Round 1 inizia. Turno di ${names[(dealer+1)%names.length]}.`]};
 }
 
-// App state
+// ── App state ─────────────────────────────────────────
 let GS=null,PI=0,totalScores=[];
 let selectedCard=null,selectedCaptures=[],possibleCaptures=[];
 let roomCode=null,myName='',isHost=false,stateUnsub=null;
 let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
+// Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
 
-// Boot
+// ── Boot ──────────────────────────────────────────────
 document.getElementById('titleSuits').innerHTML=SUITS.map(s=>suitSVG(s,22)).join('');
 document.getElementById('topSuits').innerHTML=SUITS.map(s=>suitSVG(s,15)).join('');
 
-// Lobby
+// ── Lobby ─────────────────────────────────────────────
 function showStep(id){['stepMain','stepCreate','stepJoin','stepRoom'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
 function setError(m){document.getElementById('errorMsg').textContent=m;}
 function getName(){const n=document.getElementById('nameInput').value.trim();if(!n){setError('Inserisci il tuo nome.');return null;}return n;}
 function genCode(){return Math.random().toString(36).slice(2,6).toUpperCase();}
 function renderPlayers(players){
   document.getElementById('playerCount').textContent=players.length;
-  document.getElementById('playersList').innerHTML=players.map((p,i)=>'<div class="player-row"><div class="player-avatar">'+p[0].toUpperCase()+'</div><span style="font-size:14px">'+p+(i===0?' (Host)':'')+'</span></div>').join('');
-  const sb=document.getElementById('startBtn');if(sb)sb.textContent='Inizia il Gioco ('+players.length+' giocatori)';
+  document.getElementById('playersList').innerHTML=players.map((p,i)=>`<div class="player-row"><div class="player-avatar">${p[0].toUpperCase()}</div><span style="font-size:14px">${p}${i===0?' (Host)':''}</span></div>`).join('');
+  const sb=document.getElementById('startBtn');if(sb)sb.textContent=`Inizia il Gioco (${players.length} giocatori)`;
 }
 window.showCreate=()=>showStep('stepCreate');
 window.showJoin=()=>showStep('stepJoin');
@@ -407,21 +410,21 @@ window.createRoom=async()=>{
   const name=getName();if(!name)return;
   myName=name;isHost=true;
   const code=genCode();roomCode=code;
-  await set(ref(db,'rooms/'+code),{players:[name],state:null,started:false});
+  await set(ref(db,`rooms/${code}`),{players:[name],state:null,started:false});
   showRoomUI(code,[name],true);listenRoom(code);setError('');
 };
 window.joinRoom=async()=>{
   const name=getName();if(!name)return;
   const code=document.getElementById('codeInput').value.toUpperCase().trim();
   if(code.length!==4){setError('Il codice deve avere 4 caratteri.');return;}
-  const snap=await get(ref(db,'rooms/'+code));
+  const snap=await get(ref(db,`rooms/${code}`));
   if(!snap.exists()){setError('Stanza non trovata.');return;}
   const room=snap.val();
-  if(room.started){setError("La partita \u00e8 gi\u00e0 iniziata.");return;}
+  if(room.started){setError('La partita è già iniziata.');return;}
   if(room.players&&room.players.length>=4){setError('Stanza piena (max 4 giocatori).');return;}
   const players=[...(room.players||[]),name];
   myName=name;isHost=false;roomCode=code;
-  await update(ref(db,'rooms/'+code),{players});
+  await update(ref(db,`rooms/${code}`),{players});
   showRoomUI(code,players,false);listenRoom(code);setError('');
 };
 function showRoomUI(code,players,host){
@@ -433,7 +436,7 @@ function showRoomUI(code,players,host){
 }
 let lobbyUnsub=null;
 function listenRoom(code){
-  lobbyUnsub=onValue(ref(db,'rooms/'+code),snap=>{
+  lobbyUnsub=onValue(ref(db,`rooms/${code}`),snap=>{
     if(!snap.exists())return;
     const room=snap.val();
     if(room.players)renderPlayers(room.players);
@@ -446,14 +449,14 @@ function listenRoom(code){
   });
 }
 window.hostStart=async()=>{
-  const snap=await get(ref(db,'rooms/'+roomCode));if(!snap.exists())return;
+  const snap=await get(ref(db,`rooms/${roomCode}`));if(!snap.exists())return;
   const room=snap.val();
   if(!room.players||room.players.length<2){setError('Servono almeno 2 giocatori.');return;}
   const gs=createGameState(room.players);
-  await update(ref(db,'rooms/'+roomCode),{state:gs,started:true,pushedBy:-1});
+  await update(ref(db,`rooms/${roomCode}`),{state:gs,started:true,pushedBy:-1});
 };
 
-// Begin game
+// ── Begin game ────────────────────────────────────────
 function beginGame(gs,pi){
   GS=sanitizeGS(gs);PI=pi;
   totalScores=[...GS.scores];
@@ -467,31 +470,30 @@ let listening=false;
 function startListening(){
   if(listening)return;
   listening=true;
-  stateUnsub=onValue(ref(db,'rooms/'+roomCode),async snap=>{
+  stateUnsub=onValue(ref(db,`rooms/${roomCode}`),async snap=>{
     if(!snap.exists())return;
     const room=snap.val();
     if(!room.state||room.pushedBy===PI)return;
     const remote=sanitizeGS(deepCopy(room.state));
 
+    // If this is a preview push (animation), show the animation then wait for final
     if(remote.phase==='preview'){
       pendingCard        =remote.previewCard||null;
       pendingCapture     =remote.previewCapture||null;
       pendingTableBefore =remote.previewTableBefore||null;
       render();
-      return;
+      return; // final state will come in the next push
     }
 
+    // Clear any pending preview
     pendingCard=null;pendingCapture=null;pendingTableBefore=null;
 
+    // Round-end state: show scoreboard
     if(remote.phase==='roundEnd'){
       GS=remote;totalScores=[...remote.scores];
       showRoundScoreboard(remote);
       return;
     }
-
-    // New play state: dismiss round overlay if still showing (non-host path)
-    document.getElementById('roundOverlay').style.display='none';
-    closeDrawer();
 
     GS=remote;
     totalScores=[...remote.scores];
@@ -509,24 +511,26 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
 }
 
-// Render
+// ── Render ────────────────────────────────────────────
 function render(){
   if(!GS)return;
-  document.getElementById('topInfo').textContent='Round '+GS.round+' - '+GS.deck.length+' carte';
+  document.getElementById('topInfo').textContent=`Round ${GS.round} · ${GS.deck.length} carte`;
 
+  // Opponents
   const oa=document.getElementById('opponentsArea');oa.innerHTML='';
   GS.playerNames.forEach((name,i)=>{
     if(i===PI)return;
     const active=GS.currentTurn===i;
-    const backs=GS.hands[i].map(()=>'<div class="card-back" style="width:40px;height:62px;margin-left:-14px"><div class="card-back-inner" style="width:calc(100% - 8px);height:calc(100% - 8px)">&#9830;</div></div>').join('');
-    oa.innerHTML+='<div class="opp-hand"><div style="flex:1;min-width:0"><div class="opp-name'+(active?' active':'')+'">'+name+(active?' &#9679;':'')+'</div><div class="opp-stats">'+GS.captured[i].length+' cat - '+GS.scopas[i]+' scope</div></div><div class="opp-cards" style="padding-left:14px">'+backs+'</div></div>';
+    const backs=GS.hands[i].map(()=>`<div class="card-back" style="width:40px;height:62px;margin-left:-14px"><div class="card-back-inner" style="width:calc(100% - 8px);height:calc(100% - 8px)">♦</div></div>`).join('');
+    oa.innerHTML+=`<div class="opp-hand"><div style="flex:1;min-width:0"><div class="opp-name${active?' active':''}">${name}${active?' ●':''}</div><div class="opp-stats">${GS.captured[i].length} cat · ${GS.scopas[i]} scope</div></div><div class="opp-cards" style="padding-left:14px">${backs}</div></div>`;
   });
 
+  // Table
   const tc=document.getElementById('tableCards');
   const pendingCapIds=new Set((pendingCapture||[]).map(c=>c.id));
   const tableToShow=pendingCard?[...(pendingTableBefore||GS.table),pendingCard]:GS.table;
   if(tableToShow.length===0){
-    tc.innerHTML='<span class="table-empty">Il tavolo &egrave; vuoto</span>';
+    tc.innerHTML='<span class="table-empty">Il tavolo è vuoto</span>';
   } else {
     tc.innerHTML=tableToShow.map(c=>{
       const isPlayed=pendingCard&&c.id===pendingCard.id;
@@ -538,53 +542,58 @@ function render(){
       if(isCapturing)    cls+=' cap-selected';
       if(canCap&&!capSel)cls+=' highlight clickable';
       if(capSel)         cls+=' cap-selected clickable';
-      return '<div class="'+cls+'" style="width:62px;height:96px" onclick="tableCardClick(\'+c.id+\')">'+cardHTML(c)+'</div>';
+      return `<div class="${cls}" style="width:62px;height:96px" onclick="tableCardClick('${c.id}')">${cardHTML(c)}</div>`;
     }).join('');
   }
   const hint=document.getElementById('captureHint');
   if(selectedCard&&possibleCaptures.length>1){hint.style.display='block';hint.textContent='Seleziona le carte da catturare, poi clicca Cattura';}
   else hint.style.display='none';
 
+  // Hand
   const myHand=GS.hands[PI].filter(c=>!pendingCard||c.id!==pendingCard.id);
-  document.getElementById('handStats').textContent=myHand.length+' carte - '+GS.captured[PI].length+' catturate - '+GS.scopas[PI]+' scope';
+  document.getElementById('handStats').textContent=`${myHand.length} carte · ${GS.captured[PI].length} catturate · ${GS.scopas[PI]} scope`;
   document.getElementById('handCards').innerHTML=myHand.map(c=>{
-    const mt=GS.currentTurn===PI,sel=selectedCard&&selectedCard.id===c.id;
+    const mt=GS.currentTurn===PI,sel=selectedCard?.id===c.id;
     let cls='card '+(mt?'clickable':'faded')+(sel?' selected':'');
-    return '<div class="'+cls+'" style="width:62px;height:96px" onclick="handCardClick(\'+c.id+\')">'+cardHTML(c)+'</div>';
+    return `<div class="${cls}" style="width:62px;height:96px" onclick="handCardClick('${c.id}')">${cardHTML(c)}</div>`;
   }).join('');
 
+  // Action
   const aa=document.getElementById('actionArea'),myTurn=GS.currentTurn===PI&&!pendingCard;
   if(myTurn&&selectedCard){
     const noCap=possibleCaptures.length===0;
-    aa.innerHTML='<button class="play-btn'+(noCap?' no-cap':'')+'" onclick="playCard()">'+(noCap?'Sul Tavolo':'Cattura!')+'</button>';
+    aa.innerHTML=`<button class="play-btn${noCap?' no-cap':''}" onclick="playCard()">${noCap?'Sul Tavolo':'Cattura!'}</button>`;
   } else if(pendingCard){
     aa.innerHTML='';
   } else if(!myTurn){
-    aa.innerHTML='<span class="turn-msg">Turno di '+GS.playerNames[GS.currentTurn]+'...</span>';
+    aa.innerHTML=`<span class="turn-msg">Turno di ${GS.playerNames[GS.currentTurn]}…</span>`;
   } else {
     aa.innerHTML='<span class="turn-msg">Scegli una carta</span>';
   }
 
-  document.getElementById('scoresBar').innerHTML=GS.playerNames.map((name,i)=>'<div class="score-cell"><div class="score-name">'+name+(i===PI?' (tu)':'')+'</div><div class="score-val'+(GS.currentTurn===i?' active':'')+'">'+totalScores[i]+'</div></div>').join('');
+  // Scores bar
+  document.getElementById('scoresBar').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-cell"><div class="score-name">${name}${i===PI?' (tu)':''}</div><div class="score-val${GS.currentTurn===i?' active':''}">${totalScores[i]}</div></div>`).join('');
 
+  // Log
   const le=document.getElementById('logEntries');
-  le.innerHTML=GS.log.map(l=>'<div class="log-entry">'+l+'</div>').join('');
+  le.innerHTML=GS.log.map(l=>`<div class="log-entry">${l}</div>`).join('');
   le.scrollTop=le.scrollHeight;
 
-  document.getElementById('scoresOverlayContent').innerHTML=GS.playerNames.map((name,i)=>'<div class="score-row"><span>'+name+(i===PI?' (tu)':'')+'</span><span class="pts">'+totalScores[i]+' pt</span></div>').join('');
+  // Scores overlay
+  document.getElementById('scoresOverlayContent').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-row"><span>${name}${i===PI?' (tu)':''}</span><span class="pts">${totalScores[i]} pt</span></div>`).join('');
 }
 
 function cardHTML(card){
   const col=SUIT_COLOR[card.suit];
   const pips=[...Array(Math.min(card.value,3))].map(()=>suitSVG(card.suit,11)).join('');
-  return '<div class="card-face" style="color:'+col+'"><div style="align-self:flex-start"><b style="font-size:15px;line-height:1">'+card.value+'</b></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px">'+suitSVG(card.suit,22)+'<div style="display:flex;gap:2px">'+pips+'</div></div><div style="align-self:flex-end;transform:rotate(180deg)"><b style="font-size:15px;line-height:1">'+card.value+'</b></div></div>';
+  return `<div class="card-face" style="color:${col}"><div style="align-self:flex-start"><b style="font-size:15px;line-height:1">${card.value}</b></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px">${suitSVG(card.suit,22)}<div style="display:flex;gap:2px">${pips}</div></div><div style="align-self:flex-end;transform:rotate(180deg)"><b style="font-size:15px;line-height:1">${card.value}</b></div></div>`;
 }
 
-// Interactions
+// ── Interactions ──────────────────────────────────────
 window.handCardClick=id=>{
   if(GS.currentTurn!==PI||pendingCard)return;
   const card=GS.hands[PI].find(c=>c.id===id);if(!card)return;
-  if(selectedCard&&selectedCard.id===id){selectedCard=null;possibleCaptures=[];selectedCaptures=[];}
+  if(selectedCard?.id===id){selectedCard=null;possibleCaptures=[];selectedCaptures=[];}
   else{selectedCard=card;selectedCaptures=[];possibleCaptures=findCaptures(card,GS.table);}
   render();
 };
@@ -606,19 +615,22 @@ window.playCard=async()=>{
   const chosenCap=caps.length>0?(selectedCaptures.length>0?selectedCaptures[0]:caps[0]):null;
   const tableBefore=deepCopy(GS.table);
 
+  // Show local preview immediately
   pendingCard=cardPlayed;pendingCapture=chosenCap;pendingTableBefore=tableBefore;
   selectedCard=null;possibleCaptures=[];selectedCaptures=[];
   render();
 
+  // Push PREVIEW state to Firebase so other player sees animation simultaneously
   if(roomCode){
     stopListening();
-    await update(ref(db,'rooms/'+roomCode),{
+    await update(ref(db,`rooms/${roomCode}`),{
       state:{...deepCopy(GS),phase:'preview',previewCard:cardPlayed,previewCapture:chosenCap||null,previewTableBefore:tableBefore},
       pushedBy:PI
     });
     startListening();
   }
 
+  // Wait 1.5s then resolve
   await new Promise(r=>setTimeout(r,1500));
 
   pendingCard=null;pendingCapture=null;pendingTableBefore=null;
@@ -641,7 +653,7 @@ function applyMove(gs,pIdx,card,selCaps){
   gs.hands[pIdx]=gs.hands[pIdx].filter(c=>c.id!==card.id);
   if(caps.length===0){
     gs.table.push(card);
-    msg=gs.playerNames[pIdx]+' gioca '+ITAL[card.value]+' di '+card.suit+' sul tavolo.';
+    msg=`${gs.playerNames[pIdx]} gioca ${ITAL[card.value]} di ${card.suit} sul tavolo.`;
   } else {
     let chosen=selCaps.length>0?selCaps[0]:caps[0];
     const exact=caps.find(c=>c.length===1&&c[0].value===card.value);
@@ -650,8 +662,8 @@ function applyMove(gs,pIdx,card,selCaps){
     gs.table=gs.table.filter(c=>!ids.has(c.id));
     gs.captured[pIdx]=[...gs.captured[pIdx],card,...chosen];
     gs.lastCapture=pIdx;
-    msg=gs.playerNames[pIdx]+' cattura con '+card.value+' di '+card.suit+'.';
-    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;msg+=' - SCOPA!';flashScopa('SCOPA!');}
+    msg=`${gs.playerNames[pIdx]} cattura con ${card.value} di ${card.suit}.`;
+    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;msg+=' — SCOPA!';flashScopa('SCOPA!');}
   }
   gs.log=[...gs.log,msg];
   return advance(gs);
@@ -673,78 +685,94 @@ function advance(gs){
       gs.captured[gs.lastCapture]=[...gs.captured[gs.lastCapture],...gs.table];
       gs.table=[];
     }
+    // Return round-end state — scoring happens after ready
     return{...gs,phase:'roundEnd',scores:[...totalScores]};
   }
   return gs;
 }
 
-// Round Scoreboard
+// ── Round Scoreboard ──────────────────────────────────
 function showRoundScoreboard(gs){
+  // Compute round detail from the gs snapshot (before new round starts)
   const n=gs.playerNames.length;
   const detail=calcRoundDetail(gs);
-  const scoresBefore=totalScores.map(s=>s);
+  const scoresBefore=totalScores.map((s,i)=>s); // totalScores not yet updated
+  // Apply round points
   const newTotal=scoresBefore.map((s,i)=>s+detail.pts[i]);
 
   roundData={gs,detail,scoresBefore,newTotal};
   roundCapturedSnapshot=gs.captured.map(arr=>[...arr]);
   myReady=false;
 
+  // Build table HTML
   const names=gs.playerNames;
   function cell(winner,i,extra){
     const tie=winner===-1;
     const scored=winner===i;
-    const val=tie?'-':(scored?'1':'0');
+    const val=tie?'—':(scored?'1':'0');
     const cls=tie?'pts-cell tie':'pts-cell'+(scored?' scored':'');
-    const det=extra?'<span class="detail">('+extra+')</span>':'';
-    return '<td><span class="'+cls+'">'+val+'</span>'+det+'</td>';
+    const det=extra?`<span class="detail">(${extra})</span>`:'';
+    return `<td><span class="${cls}">${val}</span>${det}</td>`;
   }
 
-  let thead='<thead><tr><th>Categoria</th>'+names.map((n,i)=>'<th>'+n+(i===PI?' (tu)':'')+'</th>').join('')+'</tr></thead>';
+  let thead=`<thead><tr><th>Categoria</th>${names.map((n,i)=>`<th>${n}${i===PI?' (tu)':''}</th>`).join('')}</tr></thead>`;
   let rows='';
-  rows+='<tr><td>Inizio Round</td>'+names.map((_,i)=>'<td><span class="pts-cell">'+scoresBefore[i]+'</span></td>').join('')+'</tr>';
-  rows+='<tr><td>Scope</td>'+names.map((_,i)=>'<td><span class="pts-cell'+(detail.scopas[i]>0?' scored':'')+'">'+detail.scopas[i]+'</span></td>').join('')+'</tr>';
-  rows+='<tr><td>Carte</td>'+names.map((_,i)=>cell(detail.carteWinner,i,detail.cardCounts[i])).join('')+'</tr>';
-  rows+='<tr><td>Denari</td>'+names.map((_,i)=>cell(detail.denariWinner,i,detail.denariCounts[i])).join('')+'</tr>';
-  rows+='<tr><td>Settebello</td>'+names.map((_,i)=>cell(detail.settebelloWinner,i,null)).join('')+'</tr>';
-  rows+='<tr><td>Primiera</td>'+names.map((_,i)=>cell(detail.primWinner,i,detail.primScores[i]!==null?detail.primScores[i]:'-')).join('')+'</tr>';
-  rows+='<tr class="total-row"><td>Totale</td>'+names.map((_,i)=>'<td>'+newTotal[i]+'</td>').join('')+'</tr>';
+  // Start
+  rows+=`<tr><td>Inizio Round</td>${names.map((_,i)=>`<td><span class="pts-cell">${scoresBefore[i]}</span></td>`).join('')}</tr>`;
+  // Scope
+  rows+=`<tr><td>Scope</td>${names.map((_,i)=>`<td><span class="pts-cell${detail.scopas[i]>0?' scored':''}">${detail.scopas[i]}</span></td>`).join('')}</tr>`;
+  // Carte
+  rows+=`<tr><td>Carte</td>${names.map((_,i)=>cell(detail.carteWinner,i,detail.cardCounts[i])).join('')}</tr>`;
+  // Denari
+  rows+=`<tr><td>Denari</td>${names.map((_,i)=>cell(detail.denariWinner,i,detail.denariCounts[i])).join('')}</tr>`;
+  // Settebello
+  rows+=`<tr><td>Settebello</td>${names.map((_,i)=>cell(detail.settebelloWinner,i,null)).join('')}</tr>`;
+  // Primiera
+  rows+=`<tr><td>Primiera</td>${names.map((_,i)=>cell(detail.primWinner,i,detail.primScores[i]!==null?detail.primScores[i]:'—')).join('')}</tr>`;
+  // Total
+  rows+=`<tr class="total-row"><td>Totale</td>${names.map((_,i)=>`<td>${newTotal[i]}</td>`).join('')}</tr>`;
 
-  document.getElementById('roundTable').innerHTML=thead+'<tbody>'+rows+'</tbody>';
-  document.getElementById('roundOverlayTitle').textContent='Fine Round '+gs.round;
+  document.getElementById('roundTable').innerHTML=thead+`<tbody>${rows}</tbody>`;
+  document.getElementById('roundOverlayTitle').textContent=`Fine Round ${gs.round}`;
 
   const winner=newTotal.findIndex(s=>s>=11);
   document.getElementById('roundOverlaySubtitle').textContent=
-    winner>=0?gs.playerNames[winner]+' vince la partita!':'Prossimo round: Round '+(gs.round+1);
+    winner>=0?`${gs.playerNames[winner]} vince la partita!`:`Prossimo round: Round ${gs.round+1}`;
 
+  // View-cards buttons
   document.getElementById('roundViewBtns').innerHTML=
-    names.map((name,i)=>'<button class="view-cards-btn" onclick="openDrawer('+i+')">'+suitSVG('Denari',12)+' Carte di '+name+'</button>').join('');
+    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})">${suitSVG('Denari',12)} Carte di ${name}</button>`).join('');
 
   document.getElementById('readyBtn').disabled=false;
-  document.getElementById('readyBtn').textContent='Sono Pronto';
   document.getElementById('waitingPlayers').textContent='';
   document.getElementById('roundOverlay').style.display='flex';
 
+  // Listen for ready signals in Firebase
   if(roomCode){
-    onValue(ref(db,'rooms/'+roomCode+'/ready'),snap=>{
+    onValue(ref(db,`rooms/${roomCode}/ready`),snap=>{
       const readyMap=snap.val()||{};
       const readyCount=Object.keys(readyMap).filter(k=>readyMap[k]).length;
       const total=gs.playerNames.length;
       document.getElementById('waitingPlayers').textContent=
-        readyCount<total?'In attesa: '+readyCount+'/'+total+' pronti':'';
+        readyCount<total?`In attesa: ${readyCount}/${total} pronti`:'';
       if(readyCount>=total){
+        // Everyone ready — proceed
         proceedAfterRound(gs,newTotal,winner);
       }
     },{onlyOnce:false});
+  } else {
+    // Solo / offline: proceed immediately after pressing ready
   }
 }
 
 window.pressReady=async()=>{
   myReady=true;
   document.getElementById('readyBtn').disabled=true;
-  document.getElementById('readyBtn').textContent='Pronto';
+  document.getElementById('readyBtn').textContent='Pronto ✓';
   if(roomCode){
-    await update(ref(db,'rooms/'+roomCode+'/ready'),{[PI]:true});
+    await update(ref(db,`rooms/${roomCode}/ready`),{[PI]:true});
   } else {
+    // offline game: proceed directly
     const {gs,newTotal}=roundData;
     const winner=newTotal.findIndex(s=>s>=11);
     proceedAfterRound(gs,newTotal,winner);
@@ -761,6 +789,7 @@ function proceedAfterRound(gs,newTotal,winner){
     return;
   }
 
+  // Start new round — only host generates new state to avoid duplicates
   if(!roomCode||isHost){
     const nr=gs.round+1,nd=(gs.dealer+1)%gs.playerNames.length;
     const fd=shuffle(buildDeck()),tc=fd.splice(0,4),nh=gs.playerNames.map(()=>fd.splice(0,3));
@@ -768,30 +797,32 @@ function proceedAfterRound(gs,newTotal,winner){
       captured:gs.playerNames.map(()=>[]),scopas:gs.playerNames.map(()=>0),
       round:nr,dealer:nd,currentTurn:(nd+1)%gs.playerNames.length,lastCapture:null,
       phase:'play',scores:[...newTotal],
-      log:[...gs.log,'=== Round '+nr+' inizia. ===']};
+      log:[...gs.log,`=== Round ${nr} inizia. ===`]};
     GS=newGs;
     if(roomCode){
+      // Clear ready flags then push new state
+      update(ref(db,`rooms/${roomCode}`),{ready:null});
       stopListening();
-      update(ref(db,'rooms/'+roomCode),{ready:null});
       pushState(newGs).then(()=>startListening());
     }
     render();
   }
+  // Non-host players: the listener will pick up the new state from host
 }
 
 function endGame(gs,wi){
   showScreen('sGameOver');
-  document.getElementById('goWinner').textContent='[Trofeo] '+gs.playerNames[wi];
-  document.getElementById('goScores').innerHTML=gs.playerNames.map((n,i)=>'<div class="score-row"><span>'+n+(i===PI?' (tu)':'')+'</span><span class="pts">'+totalScores[i]+' pt</span></div>').join('');
-  if(roomCode)remove(ref(db,'rooms/'+roomCode));
+  document.getElementById('goWinner').textContent='🏆 '+gs.playerNames[wi];
+  document.getElementById('goScores').innerHTML=gs.playerNames.map((n,i)=>`<div class="score-row"><span>${n}${i===PI?' (tu)':''}</span><span class="pts">${totalScores[i]} pt</span></div>`).join('');
+  if(roomCode)remove(ref(db,`rooms/${roomCode}`));
 }
 
-// Cards Drawer
+// ── Cards Drawer ──────────────────────────────────────
 window.openDrawer=playerIdx=>{
   if(!roundCapturedSnapshot)return;
   const name=GS?GS.playerNames[playerIdx]:'';
   const cards=roundCapturedSnapshot[playerIdx]||[];
-  document.getElementById('drawerTitle').textContent='Carte di '+name;
+  document.getElementById('drawerTitle').textContent=`Carte di ${name}`;
 
   const bySuit={Coppe:[],Denari:[],Spade:[],Bastoni:[]};
   for(const c of cards)bySuit[c.suit].push(c);
@@ -803,13 +834,20 @@ window.openDrawer=playerIdx=>{
   let html='';
   for(const suit of SUITS){
     if(bySuit[suit].length===0)continue;
-    html+='<div class="drawer-section"><div class="drawer-section-title">'+suitSVG(suit,12)+' '+suit+' ('+bySuit[suit].length+')</div><div class="drawer-cards">'+bySuit[suit].map(c=>'<div class="card" style="width:48px;height:74px">'+cardHTML(c)+'</div>').join('')+'</div></div>';
+    html+=`<div class="drawer-section">
+      <div class="drawer-section-title">${suitSVG(suit,12)} ${suit} (${bySuit[suit].length})</div>
+      <div class="drawer-cards">${bySuit[suit].map(c=>`<div class="card" style="width:48px;height:74px">${cardHTML(c)}</div>`).join('')}</div>
+    </div>`;
   }
 
   if(primScore!==null){
-    html+='<div class="drawer-section"><div class="drawer-section-title">Primiera ('+primScore+' punti)</div><div class="drawer-cards">'+primCards.map(c=>'<div class="card" style="width:48px;height:74px;outline:2px solid var(--gold);border-radius:7px">'+cardHTML(c)+'</div>').join('')+'</div><div class="primiera-box">'+primCards.map(c=>'<div class="primiera-row"><span>'+suitSVG(c.suit,11)+' '+c.suit+'</span><span style="color:var(--parchment)">'+ITAL[c.value]+' - '+primVal(c.value)+' pt</span></div>').join('')+'<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>Totale</span><span style="color:#ffd700">'+primScore+'</span></div></div></div>';
+    html+=`<div class="drawer-section">
+      <div class="drawer-section-title">Primiera (${primScore} punti)</div>
+      <div class="drawer-cards">${primCards.map(c=>`<div class="card" style="width:48px;height:74px;outline:2px solid var(--gold);border-radius:7px">${cardHTML(c)}</div>`).join('')}</div>
+      <div class="primiera-box">${primCards.map(c=>`<div class="primiera-row"><span>${suitSVG(c.suit,11)} ${c.suit}</span><span style="color:var(--parchment)">${ITAL[c.value]} → ${primVal(c.value)} pt</span></div>`).join('')}<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>Totale</span><span style="color:#ffd700">${primScore}</span></div></div>
+    </div>`;
   } else {
-    html+='<div class="drawer-section"><div class="drawer-section-title" style="color:rgba(200,168,80,.35)">Primiera non qualificata (serve almeno una carta per ogni seme)</div></div>';
+    html+=`<div class="drawer-section"><div class="drawer-section-title" style="color:rgba(200,168,80,.35)">Primiera non qualificata (serve almeno una carta per ogni seme)</div></div>`;
   }
 
   document.getElementById('drawerBody').innerHTML=html||'<div style="color:rgba(200,168,80,.4);font-style:italic;font-size:13px">Nessuna carta raccolta.</div>';
@@ -817,11 +855,11 @@ window.openDrawer=playerIdx=>{
 };
 window.closeDrawer=()=>document.getElementById('cardsDrawer').classList.remove('open');
 
-// Firebase helpers
+// ── Firebase helpers ──────────────────────────────────
 async function pushState(gs){
   if(!roomCode)return;
   const toSave={...gs,scores:[...totalScores],phase:gs.phase||'play'};
-  await update(ref(db,'rooms/'+roomCode),{state:toSave,pushedBy:PI});
+  await update(ref(db,`rooms/${roomCode}`),{state:toSave,pushedBy:PI});
 }
 
 function sanitizeGS(gs){
@@ -843,7 +881,7 @@ function sanitizeGS(gs){
   return gs;
 }
 
-// UI helpers
+// ── UI helpers ────────────────────────────────────────
 window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
 function flashScopa(msg){const el=document.getElementById('scopaFlash');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2000);}
