@@ -827,7 +827,9 @@ function startListening(){
       if(remote.round===lastShownRoundEnd)return; // ready:null update re-fires listener with stale state; ignore
       lastShownRoundEnd=remote.round;
       GS=remote;totalScores=[...remote.scores];
+      const _snap=GS.table;GS.table=GS.collectedCards||[];
       render();
+      GS.table=_snap;
       if(remote.collectedBy!==null&&remote.collectedBy!==undefined)await flashCollection(remote.playerNames[remote.collectedBy]);
       showRoundScoreboard(remote);
       return;
@@ -1014,7 +1016,9 @@ window.playCard=async()=>{
 
   if(GS.phase==='roundEnd'){
     lastShownRoundEnd=GS.round;
+    const _snap=GS.table;GS.table=GS.collectedCards||[];
     render();
+    GS.table=_snap;
     if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
@@ -1060,13 +1064,14 @@ function advance(gs){
   }
 
   if(gs.deck.length===0){
-    let collectedBy=null;
+    let collectedBy=null,collectedCards=[];
     if(gs.lastCapture!==null&&gs.table.length>0){
       collectedBy=gs.lastCapture;
+      collectedCards=[...gs.table];
       gs.captured[gs.lastCapture]=[...gs.captured[gs.lastCapture],...gs.table];
       gs.table=[];
     }
-    return{...gs,phase:'roundEnd',scores:[...totalScores],collectedBy};
+    return{...gs,phase:'roundEnd',scores:[...totalScores],collectedBy,collectedCards};
   }
   return gs;
 }
