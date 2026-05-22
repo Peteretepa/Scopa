@@ -444,6 +444,7 @@ let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
 // Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
 let readyUnsub=null; // unsubscriber for the per-round ready listener
+let lastShownRoundEnd=-1; // prevents re-processing same roundEnd when ready:null fires the listener
 
 // ── Boot ──────────────────────────────────────────────
 document.getElementById('titleSuits').innerHTML=SUITS.map(s=>suitSVG(s,22)).join('');
@@ -555,6 +556,7 @@ function beginGame(gs,pi){
   GS=sanitizeGS(gs);PI=pi;
   totalScores=[...GS.scores];
   selectedCard=null;selectedCaptures=[];possibleCaptures=[];
+  lastShownRoundEnd=-1;
   showScreen('sGame');
   if(roomCode)startListening();
   render();
@@ -608,6 +610,8 @@ function startListening(){
     if(remote.lastScopaBy!==null&&remote.lastScopaBy!==undefined)flashScopa('SCOPA!');
 
     if(remote.phase==='roundEnd'){
+      if(remote.round===lastShownRoundEnd)return; // ready:null update re-fires listener with stale state; ignore
+      lastShownRoundEnd=remote.round;
       GS=remote;totalScores=[...remote.scores];
       if(remote.collectedBy!==null&&remote.collectedBy!==undefined)await flashCollection(remote.playerNames[remote.collectedBy]);
       showRoundScoreboard(remote);
@@ -776,6 +780,7 @@ window.playCard=async()=>{
   }
 
   if(GS.phase==='roundEnd'){
+    lastShownRoundEnd=GS.round;
     if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
