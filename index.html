@@ -585,10 +585,11 @@ window.toggleMuteSfx=()=>{
   if(_sfxGain)_sfxGain.gain.value=_sfxMuted?0:parseFloat(sl.value);
 };
 window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.style.display=p.style.display==='none'?'flex':'none';};
-function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_sfxGain||_AC.destination);s.start(0);}}
+function _snd(url,vol=1){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];if(vol!==1){const g=_AC.createGain();g.gain.value=vol;s.connect(g);g.connect(_sfxGain||_AC.destination);}else s.connect(_sfxGain||_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
 function _startDealAnim(){render({dealAnim:true});setTimeout(_deal3,200);setTimeout(()=>render(),650);}
-const SFX={card:_snd('Drop.wav'),deal:_snd('place.wav'),capture:_snd('slide.wav'),scopa:_snd('Sweep.mp3'),shuffle:_snd('shuffle.wav')};
+const SFX={card:_snd('Drop.wav',2.0),deal:_snd('place.wav'),capture:_snd('slide.wav',0.8),scopa:_snd('Sweep.mp3',0.5),shuffle:_snd('shuffle.wav')};
+window._testSound=name=>SFX[name]?.();
 setTimeout(_loadVol,0);
 
 // ── Boot ──────────────────────────────────────────────
@@ -1341,6 +1342,15 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
     </div>
   </div>
   <button class="bb-btn" onclick="toggleRules()" title="Regole" style="font-family:'IM Fell English SC',serif;font-size:19px">?</button>
+</div>
+<!-- TEMP: sound test widget -->
+<div id="soundTest" style="position:fixed;bottom:16px;right:16px;z-index:9999;background:#1a1400;border:1px solid rgba(200,168,80,.5);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,.6);min-width:160px">
+  <div style="font-size:9px;color:rgba(200,168,80,.35);letter-spacing:.12em;margin-bottom:2px;text-align:center">TEMP — SOUND TEST</div>
+  <button onclick="_testSound('card')"    style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Drop (card play)</button>
+  <button onclick="_testSound('deal')"    style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Place (deal)</button>
+  <button onclick="_testSound('capture')" style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Slide (capture)</button>
+  <button onclick="_testSound('scopa')"   style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Sweep (scopa)</button>
+  <button onclick="_testSound('shuffle')" style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Shuffle</button>
 </div>
 </body>
 </html>
