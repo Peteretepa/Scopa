@@ -54,7 +54,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .sm-btn:hover{background:rgba(200,168,80,.1)}
 .game-inner{flex:1;display:flex;flex-direction:column;padding:10px 14px;gap:10px;max-width:1040px;margin:0 auto;width:100%;overflow-y:auto}
 .opponents-area{display:flex;flex-wrap:wrap;gap:10px}
-.opp-hand{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.2);border-radius:8px;padding:8px 12px;flex:1;min-width:160px}
+.opp-hand{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.2);border-radius:8px;padding:8px 12px;flex:1;min-width:160px;min-height:109px}
 .opp-name{font-size:15px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opp-name.active{color:#ffd700;font-weight:bold}
 .opp-stats{font-size:13px;color:rgba(200,168,80,.45)}
@@ -67,8 +67,8 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .table-cards{display:flex;flex-wrap:nowrap;gap:8px;justify-content:center}
 .table-empty{color:rgba(200,168,80,.25);font-size:13px;font-style:italic}
 .capture-hint{font-size:11px;color:#ffd700;margin-top:8px;text-align:center;display:none}
-.hand-area{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 14px;border:1px solid rgba(200,168,80,.18)}
-.hand-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.hand-area{background:rgba(0,0,0,.22);border-radius:12px;padding:8px 14px;border:1px solid rgba(200,168,80,.18);position:relative;min-height:196px}
+.hand-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:absolute;top:8px;left:14px;right:14px;z-index:1}
 .hand-label{font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;font-family:'IM Fell English SC',serif}
 .hand-stats{font-size:13px;color:rgba(200,168,80,.45)}
 .play-btn{background:var(--red);border:none;border-radius:6px;color:var(--parchment);font-size:12px;padding:7px 16px;cursor:pointer;font-family:inherit;letter-spacing:1px}
@@ -193,13 +193,15 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .go-table-wrap{width:100%;max-width:560px;background:#120e00;border:1px solid rgba(200,168,80,.38);border-radius:10px;overflow:hidden;margin-bottom:22px;padding:0 20px}
 @media(max-width:480px){
   .topbar-brand{display:none}
+  .table-label{display:none}
   .game-inner{gap:6px;padding-top:6px;padding-bottom:6px}
   .table-area{min-height:80px;overflow-x:hidden;overflow-y:hidden}
   .table-cards{flex-wrap:wrap}
   .table-cards .card{width:75px!important;height:116px!important}
-  .hand-area{padding:8px 10px}
+  .hand-area{padding:8px 10px;min-height:178px}
+  .hand-header{position:static;margin-bottom:10px}
   .hand-cards .card{width:85px!important;height:132px!important}
-  .opp-hand{min-width:110px;padding:4px 8px}
+  .opp-hand{min-width:110px;padding:4px 8px;min-height:54px}
   .opp-cards{padding-left:10px!important}
   .opp-cards .card-back{width:30px!important;height:46px!important;margin-left:-10px!important}
   .opp-name{font-size:13px}
@@ -265,7 +267,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="game-inner">
     <div class="opponents-area" id="opponentsArea"></div>
     <div class="table-area">
-
+      <div class="table-label">Tavolo</div>
       <div class="table-cards" id="tableCards"></div>
       <div class="capture-hint" id="captureHint"></div>
     </div>
