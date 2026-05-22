@@ -121,13 +121,13 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .cards-drawer{position:fixed;top:0;right:-100%;width:min(380px,95vw);height:100vh;background:#0e0a00;border-left:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:right .3s ease;overflow:hidden}
 .cards-drawer.open{right:0}
 .drawer-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(200,168,80,.2)}
-.drawer-title{font-family:'IM Fell English SC',serif;font-size:12px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+.drawer-title{font-family:'IM Fell English SC',serif;font-size:16px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
 .drawer-close{background:none;border:none;color:var(--gold);font-size:20px;cursor:pointer;line-height:1}
 .drawer-body{flex:1;overflow-y:auto;padding:14px 16px}
 .drawer-section{margin-bottom:18px}
 .drawer-section-title{font-size:13px;letter-spacing:2px;color:rgba(200,168,80,.6);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
 .drawer-cards{display:flex;flex-wrap:wrap;gap:6px}
-.primiera-box{background:rgba(200,168,80,.06);border:1px solid rgba(200,168,80,.2);border-radius:6px;padding:8px 12px;font-size:12px;color:rgba(200,168,80,.8);margin-top:10px}
+.primiera-box{background:rgba(200,168,80,.06);border:1px solid rgba(200,168,80,.2);border-radius:6px;padding:8px 12px;font-size:15px;color:rgba(200,168,80,.8);margin-top:10px}
 .primiera-row{display:flex;justify-content:space-between;padding:2px 0}
 
 /* ── MISC OVERLAYS ── */
@@ -151,15 +151,29 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 /* ── RULES DRAWER ── */
 .rules-drawer{position:fixed;top:0;right:-100%;width:min(360px,95vw);height:100vh;background:#0e0a00;border-left:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:right .3s ease;overflow:hidden}
 .rules-drawer.open{right:0}
-.rules-content{flex:1;overflow-y:auto;padding:20px 18px;font-size:13px;line-height:1.85;color:rgba(253,243,220,.88)}
-.rules-heading{font-family:'IM Fell English SC',serif;font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(200,168,80,.2)}
+.rules-content{flex:1;overflow-y:auto;padding:20px 18px;font-size:15px;line-height:1.85;color:rgba(253,243,220,.88)}
+.rules-heading{font-family:'IM Fell English SC',serif;font-size:15px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(200,168,80,.2)}
 .rule-block{margin-bottom:16px}
-.rule-name{color:var(--gold);font-family:'IM Fell English SC',serif;font-size:13px;letter-spacing:1px}
-.rule-sub{font-size:11px;color:rgba(200,168,80,.6);margin:4px 0 2px;font-style:italic}
-.primiera-scores{margin:4px 0 4px 12px;display:grid;grid-template-columns:48px 1fr;row-gap:1px;font-size:12px;color:rgba(253,243,220,.7)}
-.rules-note{color:rgba(200,168,80,.5);font-style:italic;font-size:12px;margin-top:10px;text-align:center}
+.rule-name{color:var(--gold);font-family:'IM Fell English SC',serif;font-size:16px;letter-spacing:1px}
+.rule-sub{font-size:13px;color:rgba(200,168,80,.6);margin:4px 0 2px;font-style:italic}
+.primiera-scores{margin:4px 0 4px 12px;display:grid;grid-template-columns:56px 1fr;row-gap:3px;font-size:15px;color:rgba(253,243,220,.7)}
+.rules-note{color:rgba(200,168,80,.5);font-style:italic;font-size:14px;margin-top:10px;text-align:center}
 #rulesBtn{position:fixed;bottom:20px;right:20px;z-index:250;width:38px;height:38px;border-radius:50%;background:rgba(200,168,80,.12);border:1px solid rgba(200,168,80,.38);color:var(--gold);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'IM Fell English SC',serif;transition:background .15s;line-height:1}
 #rulesBtn:hover{background:rgba(200,168,80,.22)}
+
+/* ── CARD SHAPE ICON ── */
+.card-shape-icon{display:inline-block;width:14px;height:20px;background:#120e00;border:1.5px solid rgba(200,168,80,.65);border-radius:3px;vertical-align:middle;flex-shrink:0}
+
+/* ── DECK CHART DRAWER (slides from left) ── */
+.deck-drawer{position:fixed;top:0;left:-100%;width:min(580px,98vw);height:100vh;background:#0e0a00;border-right:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:left .3s ease;overflow:hidden}
+.deck-drawer.open{left:0}
+.deck-chart-wrap{flex:1;overflow:auto;padding:14px 10px}
+.deck-chart{border-collapse:collapse}
+.deck-chart th{font-family:'IM Fell English SC',serif;font-size:13px;color:rgba(200,168,80,.7);padding:4px 3px;text-align:center;white-space:nowrap}
+.deck-chart td{padding:3px 2px;vertical-align:middle;text-align:center}
+.deck-chart td.suit-label{font-family:'IM Fell English SC',serif;font-size:12px;color:var(--gold);text-align:right;padding-right:6px;white-space:nowrap;vertical-align:middle}
+#deckBtn{position:fixed;bottom:20px;left:20px;z-index:250;width:32px;height:46px;border-radius:5px;background:rgba(200,168,80,.12);border:1px solid rgba(200,168,80,.38);color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;font-size:11px;font-family:'IM Fell English SC',serif}
+#deckBtn:hover{background:rgba(200,168,80,.22)}
 
 /* ── GAME OVER ── */
 #sGameOver{flex-direction:column;align-items:center;justify-content:flex-start;padding:36px 20px 32px;overflow-y:auto;text-align:center;background:radial-gradient(ellipse at 50% 40%,#2a1800 0%,var(--bg) 70%)}
@@ -339,6 +353,17 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     <div class="rule-block" style="margin-top:14px"><span class="rule-name">Scopa:</span> Bonus point whenever you clear the table</div>
   </div>
 </div>
+<!-- ═══ DECK CHART DRAWER ═══ -->
+<div class="deck-drawer" id="deckDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title">Tutte le Carte</div>
+    <button class="drawer-close" onclick="toggleDeckChart()">×</button>
+  </div>
+  <div class="deck-chart-wrap">
+    <div id="deckChartBody"></div>
+  </div>
+</div>
+<button id="deckBtn" onclick="toggleDeckChart()"><span class="card-shape-icon"></span></button>
 <button id="rulesBtn" onclick="toggleRules()">?</button>
 
 <script type="module">
@@ -454,6 +479,7 @@ const SFX={card(){},capture(){},scopa(){},shuffle(){},deal(){}};
 const DISPLAY_SUITS=['Denari','Coppe','Spade','Bastoni'];
 document.getElementById('titleSuits').innerHTML=DISPLAY_SUITS.map(s=>suitImg(s,28)).join('');
 document.getElementById('topSuits').innerHTML=DISPLAY_SUITS.map(s=>suitImg(s,18)).join('');
+renderDeckChart();
 
 // ── Lobby ─────────────────────────────────────────────
 function showStep(id){['stepMain','stepCreate','stepJoin','stepRoom'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
@@ -903,7 +929,7 @@ function showRoundScoreboard(gs){
 
   // View-cards buttons
   document.getElementById('roundViewBtns').innerHTML=
-    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})"><img src="card-back.png" width="14" height="20" style="object-fit:cover;border-radius:2px;vertical-align:middle"> Carte di ${name}</button>`).join('');
+    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})"><span class="card-shape-icon"></span> Carte di ${name}</button>`).join('');
 
   document.getElementById('readyBtn').disabled=false;
   document.getElementById('waitingPlayers').textContent='';
@@ -1074,6 +1100,12 @@ function sanitizeGS(gs){
 window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
 window.toggleRules=()=>{document.getElementById('rulesDrawer').classList.toggle('open');};
+window.toggleDeckChart=()=>{document.getElementById('deckDrawer').classList.toggle('open');};
+function renderDeckChart(){
+  const thead=`<tr><th style="min-width:70px"></th>${VALS.map(v=>`<th>${v}</th>`).join('')}</tr>`;
+  const rows=SUITS.map(suit=>`<tr><td class="suit-label">${suitImg(suit,14)} ${suit}</td>${VALS.map(v=>`<td><div class="card" style="width:40px;height:62px">${cardHTML({suit,value:v})}</div></td>`).join('')}</tr>`).join('');
+  document.getElementById('deckChartBody').innerHTML=`<table class="deck-chart"><thead>${thead}</thead><tbody>${rows}</tbody></table>`;
+}
 function flashScopa(msg){SFX.scopa();const el=document.getElementById('scopaFlash');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2000);}
 function flashCollection(name){return new Promise(r=>{const el=document.getElementById('collectionFlash');el.textContent=`${name} collects the remaining cards`;el.style.display='block';setTimeout(()=>{el.style.display='none';r();},2000);});}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
