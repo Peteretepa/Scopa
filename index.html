@@ -209,6 +209,14 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   .opp-name{font-size:13px}
   .opp-stats{font-size:11px}
 }
+/* ── Audio Widget ── */
+#audioWidget{position:fixed;bottom:16px;right:16px;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+#audioBtn{width:40px;height:40px;border-radius:50%;background:#1a1400;border:1px solid rgba(200,168,80,.6);color:#c8a850;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.5);}
+#audioBtn:hover{background:#2a2000;border-color:#c8a850;}
+#audioPanel{display:none;background:#1a1400;border:1px solid rgba(200,168,80,.5);border-radius:10px;padding:14px 16px;min-width:180px;box-shadow:0 4px 16px rgba(0,0,0,.6);}
+#audioPanel label{display:block;color:#c8a850;font-size:12px;margin-bottom:4px;letter-spacing:.05em;}
+#audioPanel input[type=range]{width:100%;accent-color:#c8a850;margin-bottom:12px;}
+#audioPanel input[type=range]:last-child{margin-bottom:0;}
 </style>
 </head>
 <body>
@@ -505,18 +513,43 @@ let lastShownRoundEnd=-1; // prevents re-processing same roundEnd when ready:nul
 let gameTotalsAccum=null; // accumulated per-category points across all rounds, for game-over table
 
 // ── Sound Effects ─────────────────────────────────────
-let _AC;try{_AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+let _AC,_sfxGain;
+try{_AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}
+if(_AC){_sfxGain=_AC.createGain();_sfxGain.connect(_AC.destination);}
 const _BUF={};
 if(_AC){
   ['place.wav','slide.wav','sweep.wav','shuffle.wav'].forEach(async url=>{
     try{const r=await fetch(url);_BUF[url]=await _AC.decodeAudioData(await r.arrayBuffer());}catch(e){}
   });
-  ['click','touchend'].forEach(e=>document.addEventListener(e,()=>{if(_AC.state!=='running')_AC.resume();},{capture:true,passive:true}));
 }
-function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_AC.destination);s.start(0);}}
+// ── Background Music ───────────────────────────────────
+const _bgm=new Audio('background.mp3');
+_bgm.loop=true;
+_bgm.volume=0.5;
+let _bgmStarted=false;
+function _startBgm(){if(_bgmStarted)return;_bgmStarted=true;_bgm.play().catch(()=>{});}
+['click','touchend'].forEach(e=>document.addEventListener(e,()=>{
+  if(_AC&&_AC.state!=='running')_AC.resume();
+  _startBgm();
+},{capture:true,passive:true}));
+// ── Volume ─────────────────────────────────────────────
+function _loadVol(){
+  const mv=parseFloat(localStorage.getItem('vol_music')??'0.5');
+  const sv=parseFloat(localStorage.getItem('vol_sfx')??'1');
+  _bgm.volume=mv;
+  if(_sfxGain)_sfxGain.gain.value=sv;
+  const ms=document.getElementById('volMusic');if(ms)ms.value=mv;
+  const ss=document.getElementById('volSfx');if(ss)ss.value=sv;
+}
+function _saveVol(type,val){localStorage.setItem('vol_'+type,val);}
+window.setMusicVol=v=>{_bgm.volume=parseFloat(v);_saveVol('music',v);};
+window.setSfxVol=v=>{if(_sfxGain)_sfxGain.gain.value=parseFloat(v);_saveVol('sfx',v);};
+window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.style.display=p.style.display==='none'?'block':'none';};
+function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_sfxGain||_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
 function _startDealAnim(){render({dealAnim:true});setTimeout(_deal3,200);setTimeout(()=>render(),650);}
 const SFX={card:_snd('place.wav'),deal:_snd('place.wav'),capture:_snd('slide.wav'),scopa:_snd('sweep.wav'),shuffle:_snd('shuffle.wav')};
+setTimeout(_loadVol,0);
 
 // ── Boot ──────────────────────────────────────────────
 const DISPLAY_SUITS=['Denari','Coppe','Spade','Bastoni'];
@@ -1250,5 +1283,14 @@ function flashScopa(msg){SFX.scopa();const el=document.getElementById('scopaFlas
 function flashCollection(name){return new Promise(r=>{const el=document.getElementById('collectionFlash');el.textContent=`${name} collects the remaining cards`;el.style.display='block';setTimeout(()=>{el.style.display='none';r();},2000);});}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 </script>
+<div id="audioWidget">
+  <div id="audioPanel">
+    <label>Music</label>
+    <input type="range" id="volMusic" min="0" max="1" step="0.05" value="0.5" oninput="setMusicVol(this.value)">
+    <label>SFX</label>
+    <input type="range" id="volSfx" min="0" max="1" step="0.05" value="1" oninput="setSfxVol(this.value)">
+  </div>
+  <button id="audioBtn" onclick="toggleAudioPanel()">♪</button>
+</div>
 </body>
 </html>
