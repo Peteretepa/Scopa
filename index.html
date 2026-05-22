@@ -559,7 +559,7 @@ function _doCrossfade(){
 // ── Volume ─────────────────────────────────────────────
 function _loadVol(){
   const mv=parseFloat(localStorage.getItem('vol_music')??'0.5');
-  const sv=parseFloat(localStorage.getItem('vol_sfx')??'1');
+  const sv=parseFloat(localStorage.getItem('vol_sfx')??'0.5');
   _bgmTargetVol=mv*0.1;
   if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else _activeBgm.volume=_bgmTargetVol;
   if(_sfxGain)_sfxGain.gain.value=sv;
@@ -1331,7 +1331,7 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
       <div class="vol-row"><label>Music</label><button class="mute-btn" id="muteMusic" onclick="toggleMuteMusic()">ON</button></div>
       <input type="range" id="volMusic" min="0" max="1" step="0.05" value="0.5" oninput="setMusicVol(this.value)">
       <div class="vol-row"><label>SFX</label><button class="mute-btn" id="muteSfx" onclick="toggleMuteSfx()">ON</button></div>
-      <input type="range" id="volSfx" min="0" max="1" step="0.05" value="1" oninput="setSfxVol(this.value)">
+      <input type="range" id="volSfx" min="0" max="1" step="0.05" value="0.5" oninput="setSfxVol(this.value)">
     </div>
   </div>
   <button class="bb-btn" onclick="toggleRules()" title="Regole" style="font-family:'IM Fell English SC',serif;font-size:19px">?</button>
