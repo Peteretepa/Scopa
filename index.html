@@ -242,6 +242,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     </div>
     <div class="topbar-info" id="topInfo"></div>
     <div class="topbar-btns">
+      <span id="roomCodeBtn" style="display:none;font-family:'Courier New',monospace;font-size:13px;letter-spacing:3px;color:rgba(200,168,80,.6);border:1px solid rgba(200,168,80,.2);border-radius:5px;padding:4px 9px;cursor:pointer;user-select:none" onclick="copyRoomCode()" title="Click to copy"></span>
       <button class="sm-btn" onclick="toggleScores()">Punteggi</button>
     </div>
   </div>
@@ -618,6 +619,7 @@ function beginGame(gs,pi){
   lastShownRoundEnd=-1;gameTotalsAccum=null;
   showScreen('sGame');
   if(roomCode){setupPresence(pi);startListening();}
+  updateRoomCodeBtn();
   SFX.deal();
   if(GS.phase==='roundEnd'){lastShownRoundEnd=GS.round;showRoundScoreboard(GS);}
   else render();
@@ -1171,6 +1173,20 @@ function sanitizeGS(gs){
 }
 
 // ── UI helpers ────────────────────────────────────────
+window.copyRoomCode=()=>{
+  if(!roomCode)return;
+  navigator.clipboard.writeText(roomCode).then(()=>{
+    const el=document.getElementById('roomCodeBtn');
+    const prev=el.textContent;
+    el.textContent='Copiato!';
+    setTimeout(()=>el.textContent=prev,1200);
+  });
+};
+function updateRoomCodeBtn(){
+  const el=document.getElementById('roomCodeBtn');
+  if(roomCode){el.textContent=roomCode;el.style.display='inline-block';}
+  else{el.style.display='none';}
+}
 window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
 window.toggleRules=()=>{document.getElementById('rulesDrawer').classList.toggle('open');};
