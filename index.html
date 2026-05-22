@@ -725,7 +725,7 @@ function startListening(){
     selectedCard=null;selectedCaptures=[];possibleCaptures=[];
     if(!document.getElementById('sGame').classList.contains('active'))showScreen('sGame');
     if(isNewRound){SFX.shuffle();setTimeout(_deal3,1600);}
-    else if(isMidDeal){await new Promise(r=>setTimeout(r,1000));_deal3();}
+    else if(isMidDeal){render({hideHands:true});await new Promise(r=>setTimeout(r,1000));_deal3();}
     render();
   });
 }
@@ -742,7 +742,7 @@ function showScreen(id){
 }
 
 // ── Render ────────────────────────────────────────────
-function render(){
+function render(opts={}){
   if(!GS)return;
   document.getElementById('topInfo').textContent=`Round ${GS.round} · ${GS.deck.length} carte`;
 
@@ -751,7 +751,7 @@ function render(){
   GS.playerNames.forEach((name,i)=>{
     if(i===PI)return;
     const active=GS.currentTurn===i;
-    const backs=GS.hands[i].map(()=>`<div class="card-back" style="width:60px;height:93px;margin-left:-20px"></div>`).join('');
+    const backs=(opts.hideHands?[]:GS.hands[i]).map(()=>`<div class="card-back" style="width:60px;height:93px;margin-left:-20px"></div>`).join('');
     oa.innerHTML+=`<div class="opp-hand"><div style="flex:1;min-width:0"><div class="opp-name${active?' active':''}">${name}${active?' ●':''}</div><div class="opp-stats">${GS.captured[i].length} carte · ${GS.scopas[i]} scope</div></div><div class="opp-cards" style="padding-left:20px">${backs}</div></div>`;
   });
 
@@ -780,7 +780,7 @@ function render(){
   else hint.style.display='none';
 
   // Hand
-  const myHand=GS.hands[PI].filter(c=>!pendingCard||c.id!==pendingCard.id);
+  const myHand=opts.hideHands?[]:(GS.hands[PI].filter(c=>!pendingCard||c.id!==pendingCard.id));
   document.getElementById('handStats').textContent=`${GS.captured[PI].length} carte · ${GS.scopas[PI]} scope`;
   document.getElementById('handCards').innerHTML=myHand.map(c=>{
     const mt=GS.currentTurn===PI,sel=selectedCard?.id===c.id;
@@ -902,7 +902,11 @@ window.playCard=async()=>{
     if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
-    if(_lastAdvanceDealt){await new Promise(r=>setTimeout(r,1000));_deal3();}
+    if(_lastAdvanceDealt){
+      render({hideHands:true});
+      await new Promise(r=>setTimeout(r,1000));
+      _deal3();
+    }
     render();
   }
 };
