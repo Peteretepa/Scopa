@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Scopa</title>
+<link rel="icon" type="image/png" href="denari.png">
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -87,8 +88,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .card.faded{opacity:.5;cursor:default}
 .card-face{background:linear-gradient(155deg,#fdf8ef 60%,#f4e8c8 100%);border:1.5px solid #c8b080;width:100%;height:100%;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:4px;overflow:hidden;position:relative}
 .card-face::after{content:'';position:absolute;inset:3px;border:.5px solid rgba(180,155,100,.4);border-radius:4px;pointer-events:none}
-.card-back{background:repeating-linear-gradient(45deg,#8b1a1a 0,#8b1a1a 4px,#6b1010 4px,#6b1010 8px);border:1.5px solid #5a0e0e;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.card-back-inner{border:1.5px solid rgba(255,210,80,.3);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,210,80,.4);font-size:16px}
+.card-back{background:url('card-back.png') center/cover;border-radius:7px;flex-shrink:0}
 
 /* ── ROUND SCOREBOARD OVERLAY ── */
 .round-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:150;display:flex;align-items:center;justify-content:center}
@@ -364,13 +364,11 @@ const VALS       = [1,2,3,4,5,6,7,8,9,10];
 const ITAL       = ['','Asso','Due','Tre','Quattro','Cinque','Sei','Sette','Fante','Cavallo','Re'];
 const SUIT_COLOR = {Coppe:'#c0392b',Denari:'#b8880a',Spade:'#1c2e40',Bastoni:'#1a5a1a'};
 
-function suitSVG(suit,sz=16){
-  const c=SUIT_COLOR[suit];
-  if(suit==='Coppe')  return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><path d="M5,14 Q5,10 10,8 Q15,10 15,14 L13,14 Q13,11 10,10 Q7,11 7,14Z" fill="${c}"/><rect x="9" y="14" width="2" height="3" fill="${c}"/><rect x="7" y="17" width="6" height="1.5" rx=".5" fill="${c}"/></svg>`;
-  if(suit==='Denari') return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="${c}" opacity=".15" stroke="${c}" stroke-width="1.5"/><circle cx="10" cy="10" r="4.5" fill="${c}" opacity=".35"/><circle cx="10" cy="10" r="2.2" fill="${c}"/></svg>`;
-  if(suit==='Spade')  return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><path d="M10,2 L14,10 Q16,13 13,13 Q12,13 11.5,12 Q11,14 12,16 L8,16 Q9,14 8.5,12 Q8,13 7,13 Q4,13 6,10Z" fill="${c}"/></svg>`;
-  return `<svg width="${sz}" height="${sz}" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3" fill="${c}"/><circle cx="6.5" cy="12.5" r="3" fill="${c}"/><circle cx="13.5" cy="12.5" r="3" fill="${c}"/><rect x="9" y="14" width="2" height="3" fill="${c}"/></svg>`;
-}
+const SUIT_ROW={Coppe:0,Denari:1,Bastoni:2,Spade:3};
+const SUIT_IMG={Coppe:'coppe.png',Denari:'denari.png',Spade:'spade.png',Bastoni:'bastoni.png'};
+function suitImg(suit,sz=16){return `<img src="${SUIT_IMG[suit]}" width="${sz}" height="${sz}" style="object-fit:contain;vertical-align:middle" alt="${suit}">`;}
+// Keep suitSVG alias so any stale call still resolves
+const suitSVG=suitImg;
 
 // ── Deck ─────────────────────────────────────────────
 function buildDeck(){const d=[];for(const s of SUITS)for(const v of VALS)d.push({suit:s,value:v,id:`${v}-${s}`});return d;}
@@ -449,9 +447,55 @@ let readyUnsub=null; // unsubscriber for the per-round ready listener
 let lastShownRoundEnd=-1; // prevents re-processing same roundEnd when ready:null fires the listener
 let gameTotalsAccum=null; // accumulated per-category points across all rounds, for game-over table
 
+// ── Sound Effects ─────────────────────────────────────
+const SFX=(()=>{
+  let ctx=null;
+  const get=()=>{
+    if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume();
+    return ctx;
+  };
+  const noise=(dur,gain=0.25,hp=1200,when=0)=>{
+    const c=get(),buf=c.createBuffer(1,c.sampleRate*dur,c.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+    const src=c.createBufferSource(),filt=c.createBiquadFilter(),g=c.createGain();
+    src.buffer=buf;filt.type='highpass';filt.frequency.value=hp;
+    g.gain.setValueAtTime(gain,c.currentTime+when);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+when+dur);
+    src.connect(filt);filt.connect(g);g.connect(c.destination);
+    src.start(c.currentTime+when);
+  };
+  const tone=(freq,dur,gain=0.18,type='triangle',when=0)=>{
+    const c=get(),osc=c.createOscillator(),g=c.createGain();
+    osc.type=type;osc.frequency.value=freq;
+    g.gain.setValueAtTime(gain,c.currentTime+when);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+when+dur);
+    osc.connect(g);g.connect(c.destination);
+    osc.start(c.currentTime+when);osc.stop(c.currentTime+when+dur+0.05);
+  };
+  return{
+    card(){noise(0.1,0.28,1400);},
+    capture(){
+      const c=get(),osc=c.createOscillator(),g=c.createGain();
+      osc.type='sawtooth';
+      osc.frequency.setValueAtTime(550,c.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(110,c.currentTime+0.32);
+      g.gain.setValueAtTime(0.12,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.35);
+      osc.connect(g);g.connect(c.destination);
+      osc.start();osc.stop(c.currentTime+0.38);
+      noise(0.09,0.14,2200);
+    },
+    scopa(){[261,330,392,523,659].forEach((f,i)=>tone(f,0.28,0.22,'triangle',i*0.1));},
+    shuffle(){for(let i=0;i<8;i++)noise(0.07,0.18,1600,i*0.055);},
+    deal(){for(let i=0;i<3;i++)noise(0.09,0.22,1300,i*0.18);}
+  };
+})();
+
 // ── Boot ──────────────────────────────────────────────
-document.getElementById('titleSuits').innerHTML=SUITS.map(s=>suitSVG(s,22)).join('');
-document.getElementById('topSuits').innerHTML=SUITS.map(s=>suitSVG(s,15)).join('');
+const DISPLAY_SUITS=['Denari','Coppe','Spade','Bastoni'];
+document.getElementById('titleSuits').innerHTML=DISPLAY_SUITS.map(s=>suitImg(s,28)).join('');
+document.getElementById('topSuits').innerHTML=DISPLAY_SUITS.map(s=>suitImg(s,18)).join('');
 
 // ── Lobby ─────────────────────────────────────────────
 function showStep(id){['stepMain','stepCreate','stepJoin','stepRoom'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
@@ -562,6 +606,7 @@ function beginGame(gs,pi){
   lastShownRoundEnd=-1;gameTotalsAccum=null;
   showScreen('sGame');
   if(roomCode)startListening();
+  SFX.deal();
   render();
 }
 
@@ -604,6 +649,7 @@ function startListening(){
       pendingCard        =remote.previewCard||null;
       pendingCapture     =remote.previewCapture||null;
       pendingTableBefore =remote.previewTableBefore||null;
+      if(pendingCapture&&pendingCapture.length>0)SFX.capture();else SFX.card();
       render();
       return;
     }
@@ -651,7 +697,7 @@ function render(){
   GS.playerNames.forEach((name,i)=>{
     if(i===PI)return;
     const active=GS.currentTurn===i;
-    const backs=GS.hands[i].map(()=>`<div class="card-back" style="width:40px;height:62px;margin-left:-14px"><div class="card-back-inner" style="width:calc(100% - 8px);height:calc(100% - 8px)">♦</div></div>`).join('');
+    const backs=GS.hands[i].map(()=>`<div class="card-back" style="width:40px;height:62px;margin-left:-14px"></div>`).join('');
     oa.innerHTML+=`<div class="opp-hand"><div style="flex:1;min-width:0"><div class="opp-name${active?' active':''}">${name}${active?' ●':''}</div><div class="opp-stats">${GS.captured[i].length} cat · ${GS.scopas[i]} scope</div></div><div class="opp-cards" style="padding-left:14px">${backs}</div></div>`;
   });
 
@@ -714,9 +760,9 @@ function render(){
 }
 
 function cardHTML(card){
-  const col=SUIT_COLOR[card.suit];
-  const pips=[...Array(Math.min(card.value,3))].map(()=>suitSVG(card.suit,11)).join('');
-  return `<div class="card-face" style="color:${col}"><div style="align-self:flex-start"><b style="font-size:15px;line-height:1">${card.value}</b></div><div style="display:flex;flex-direction:column;align-items:center;gap:3px">${suitSVG(card.suit,22)}<div style="display:flex;gap:2px">${pips}</div></div><div style="align-self:flex-end;transform:rotate(180deg)"><b style="font-size:15px;line-height:1">${card.value}</b></div></div>`;
+  const col=card.value-1,row=SUIT_ROW[card.suit];
+  const px=(col/9*100).toFixed(2)+'%',py=(row/3*100).toFixed(2)+'%';
+  return `<div style="width:100%;height:100%;border-radius:7px;background:url('cards.png') ${px} ${py}/1000% 400% no-repeat"></div>`;
 }
 
 // ── Interactions ──────────────────────────────────────
@@ -752,6 +798,7 @@ window.playCard=async()=>{
   const tableBefore=deepCopy(GS.table);
 
   // Show local preview immediately
+  SFX.card();
   pendingCard=cardPlayed;pendingCapture=chosenCap;pendingTableBefore=tableBefore;
   selectedCard=null;possibleCaptures=[];selectedCaptures=[];
   render();
@@ -809,6 +856,7 @@ function applyMove(gs,pIdx,card,selCaps){
     gs.lastCapture=pIdx;
     msg=`${gs.playerNames[pIdx]} cattura con ${card.value} di ${card.suit}.`;
     if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;gs.lastScopaBy=pIdx;msg+=' — SCOPA!';flashScopa('SCOPA!');}
+    else SFX.capture();
   }
   gs.log=[...gs.log,msg];
   return advance(gs);
@@ -821,6 +869,7 @@ function advance(gs){
   if(gs.deck.length>=gs.playerNames.length*3){
     for(let i=0;i<gs.playerNames.length;i++)gs.hands[i]=gs.deck.splice(0,3);
     gs.log.push('Nuove carte distribuite.');
+    SFX.deal();
     gs.currentTurn=(gs.currentTurn+1)%gs.playerNames.length;
     return gs;
   }
@@ -896,7 +945,7 @@ function showRoundScoreboard(gs){
 
   // View-cards buttons
   document.getElementById('roundViewBtns').innerHTML=
-    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})">${suitSVG('Denari',12)} Carte di ${name}</button>`).join('');
+    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})">${suitImg('Denari',14)} Carte di ${name}</button>`).join('');
 
   document.getElementById('readyBtn').disabled=false;
   document.getElementById('waitingPlayers').textContent='';
@@ -944,6 +993,8 @@ function proceedAfterRound(gs,newTotal,winner){
     endGame(gs,winner);
     return;
   }
+
+  SFX.shuffle();
 
   // Start new round — only host generates new state to avoid duplicates
   if(!roomCode||isHost){
@@ -1015,7 +1066,7 @@ window.openDrawer=playerIdx=>{
   for(const suit of SUITS){
     if(bySuit[suit].length===0)continue;
     html+=`<div class="drawer-section">
-      <div class="drawer-section-title">${suitSVG(suit,12)} ${suit} (${bySuit[suit].length})</div>
+      <div class="drawer-section-title">${suitImg(suit,14)} ${suit} (${bySuit[suit].length})</div>
       <div class="drawer-cards">${bySuit[suit].map(c=>`<div class="card" style="width:48px;height:74px">${cardHTML(c)}</div>`).join('')}</div>
     </div>`;
   }
@@ -1024,7 +1075,7 @@ window.openDrawer=playerIdx=>{
     html+=`<div class="drawer-section">
       <div class="drawer-section-title">Primiera (${primScore} punti)</div>
       <div class="drawer-cards">${primCards.map(c=>`<div class="card" style="width:48px;height:74px;outline:2px solid var(--gold);border-radius:7px">${cardHTML(c)}</div>`).join('')}</div>
-      <div class="primiera-box">${primCards.map(c=>`<div class="primiera-row"><span>${suitSVG(c.suit,11)} ${c.suit}</span><span style="color:var(--parchment)">${ITAL[c.value]} → ${primVal(c.value)} pt</span></div>`).join('')}<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>Totale</span><span style="color:#ffd700">${primScore}</span></div></div>
+      <div class="primiera-box">${primCards.map(c=>`<div class="primiera-row"><span>${suitImg(c.suit,14)} ${c.suit}</span><span style="color:var(--parchment)">${ITAL[c.value]} → ${primVal(c.value)} pt</span></div>`).join('')}<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>Totale</span><span style="color:#ffd700">${primScore}</span></div></div>
     </div>`;
   } else {
     html+=`<div class="drawer-section"><div class="drawer-section-title" style="color:rgba(200,168,80,.35)">Primiera non qualificata (serve almeno una carta per ogni seme)</div></div>`;
@@ -1065,7 +1116,7 @@ function sanitizeGS(gs){
 window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
 window.toggleRules=()=>{document.getElementById('rulesDrawer').classList.toggle('open');};
-function flashScopa(msg){const el=document.getElementById('scopaFlash');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2000);}
+function flashScopa(msg){SFX.scopa();const el=document.getElementById('scopaFlash');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2000);}
 function flashCollection(name){return new Promise(r=>{const el=document.getElementById('collectionFlash');el.textContent=`${name} collects the remaining cards`;el.style.display='block';setTimeout(()=>{el.style.display='none';r();},2000);});}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 </script>
