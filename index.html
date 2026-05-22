@@ -210,7 +210,10 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .bb-btn{width:40px;height:40px;border-radius:50%;background:rgba(200,168,80,.12);border:1px solid rgba(200,168,80,.38);color:var(--gold);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;}
 .bb-btn:hover{background:rgba(200,168,80,.25);border-color:rgba(200,168,80,.7);}
 #audioPanel{display:none;flex-direction:column;position:absolute;bottom:48px;left:0;background:#1a1400;border:1px solid rgba(200,168,80,.5);border-radius:10px;padding:14px 16px;min-width:180px;box-shadow:0 4px 16px rgba(0,0,0,.6);}
-#audioPanel label{display:block;color:#c8a850;font-size:12px;margin-bottom:4px;letter-spacing:.05em;}
+.vol-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+#audioPanel label{color:#c8a850;font-size:12px;letter-spacing:.05em;}
+.mute-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;line-height:1;border-radius:4px;}
+.mute-btn:hover{background:rgba(200,168,80,.15);}
 #audioPanel input[type=range]{width:100%;accent-color:#c8a850;margin-bottom:12px;}
 #audioPanel input[type=range]:last-child{margin-bottom:0;}
 </style>
@@ -565,6 +568,19 @@ function _loadVol(){
 function _saveVol(type,val){localStorage.setItem('vol_'+type,val);}
 window.setMusicVol=v=>{_bgmTargetVol=parseFloat(v)*0.25;if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else if(!_crossfading)_activeBgm.volume=_bgmTargetVol;_saveVol('music',v);};
 window.setSfxVol=v=>{if(_sfxGain)_sfxGain.gain.value=parseFloat(v);_saveVol('sfx',v);};
+let _musicMuted=false,_sfxMuted=false;
+window.toggleMuteMusic=()=>{
+  _musicMuted=!_musicMuted;
+  const btn=document.getElementById('muteMusic'),sl=document.getElementById('volMusic');
+  btn.textContent=_musicMuted?'🔇':'🔊';sl.disabled=_musicMuted;sl.style.opacity=_musicMuted?'0.35':'';
+  if(_bgmGain)_bgmGain.gain.value=_musicMuted?0:_bgmTargetVol;else _activeBgm.volume=_musicMuted?0:_bgmTargetVol;
+};
+window.toggleMuteSfx=()=>{
+  _sfxMuted=!_sfxMuted;
+  const btn=document.getElementById('muteSfx'),sl=document.getElementById('volSfx');
+  btn.textContent=_sfxMuted?'🔇':'🔊';sl.disabled=_sfxMuted;sl.style.opacity=_sfxMuted?'0.35':'';
+  if(_sfxGain)_sfxGain.gain.value=_sfxMuted?0:parseFloat(sl.value);
+};
 window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_sfxGain||_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
@@ -1309,9 +1325,9 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
   <div style="position:relative">
     <button class="bb-btn" onclick="toggleAudioPanel()" title="Volume">♪</button>
     <div id="audioPanel">
-      <label>Music</label>
+      <div class="vol-row"><label>Music</label><button class="mute-btn" id="muteMusic" onclick="toggleMuteMusic()">🔊</button></div>
       <input type="range" id="volMusic" min="0" max="1" step="0.05" value="0.5" oninput="setMusicVol(this.value)">
-      <label>SFX</label>
+      <div class="vol-row"><label>SFX</label><button class="mute-btn" id="muteSfx" onclick="toggleMuteSfx()">🔊</button></div>
       <input type="range" id="volSfx" min="0" max="1" step="0.05" value="1" oninput="setSfxVol(this.value)">
     </div>
   </div>
