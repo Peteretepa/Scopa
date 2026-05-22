@@ -495,6 +495,9 @@ function startListening(){
       return;
     }
 
+    // New play state: dismiss round overlay if still showing (non-host path)
+    document.getElementById('roundOverlay').style.display='none';
+    closeDrawer();
     GS=remote;
     totalScores=[...remote.scores];
     selectedCard=null;selectedCaptures=[];possibleCaptures=[];
@@ -638,7 +641,11 @@ window.playCard=async()=>{
   gs=applyMove(gs,pIdx,cardPlayed,chosenCap?[chosenCap]:[]);
   if(!gs)return;
   GS=gs;
-  render();
+  if(GS.phase==='roundEnd'){
+    showRoundScoreboard(GS);
+  } else {
+    render();
+  }
 
   if(roomCode){
     stopListening();
