@@ -325,7 +325,7 @@ function findCaptures(card,table){
   const sub=arr=>{const out=[];for(let i=1;i<(1<<arr.length);i++){const s=arr.filter((_,j)=>i&(1<<j));if(s.reduce((a,b)=>a+b.value,0)===card.value)out.push(s);}return out;};
   return sub(table);
 }
-function primVal(v){return v<=7?v:v<=9?v:10;}
+function primVal(v){return v===7?21:v===6?18:v===1?16:v===5?15:v===4?14:v===3?13:v===2?12:10;}
 function primieraScore(cards){
   const b={Coppe:0,Denari:0,Spade:0,Bastoni:0};
   for(const c of cards){const p=primVal(c.value);if(p>b[c.suit])b[c.suit]=p;}
@@ -495,7 +495,6 @@ function startListening(){
       return;
     }
 
-    // New play state: dismiss round overlay if still showing (non-host path)
     document.getElementById('roundOverlay').style.display='none';
     closeDrawer();
     GS=remote;
