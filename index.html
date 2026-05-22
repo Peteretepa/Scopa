@@ -520,17 +520,28 @@ if(_AC){
 const _bgm1=new Audio('background.mp3');
 const _bgm2=new Audio('background.mp3');
 let _activeBgm=_bgm1,_nextBgm=_bgm2;
-let _bgmTargetVol=0.25; // slider 0-1 maps to actual 0-0.5
+let _bgmTargetVol=0.125; // slider 0-1 maps to actual 0-0.25
 let _bgmStarted=false,_crossfading=false;
-function _startBgm(){if(_bgmStarted)return;_bgmStarted=true;_activeBgm.volume=_bgmTargetVol;_activeBgm.play().catch(()=>{});}
+// Route through Web Audio so GainNode controls volume on iOS (audio.volume is read-only there)
+let _bgmGain,_bgm1Gain,_bgm2Gain;
+if(_AC){
+  _bgmGain=_AC.createGain();_bgmGain.gain.value=_bgmTargetVol;_bgmGain.connect(_AC.destination);
+  _bgm1Gain=_AC.createGain();_bgm1Gain.gain.value=1;_bgm1Gain.connect(_bgmGain);
+  _bgm2Gain=_AC.createGain();_bgm2Gain.gain.value=0;_bgm2Gain.connect(_bgmGain);
+  try{_AC.createMediaElementSource(_bgm1).connect(_bgm1Gain);}catch(e){}
+  try{_AC.createMediaElementSource(_bgm2).connect(_bgm2Gain);}catch(e){}
+}
+function _bgGain(b){return b===_bgm1?_bgm1Gain:_bgm2Gain;}
+function _startBgm(){if(_bgmStarted)return;_bgmStarted=true;_activeBgm.play().catch(()=>{});}
 function _doCrossfade(){
   if(_crossfading)return;_crossfading=true;
-  const out=_activeBgm,inn=_nextBgm;
-  inn.currentTime=0;inn.volume=0;inn.play().catch(()=>{});
+  const out=_activeBgm,inn=_nextBgm,og=_bgGain(out),ig=_bgGain(inn);
+  inn.currentTime=0;inn.play().catch(()=>{});
   let step=0;const steps=20;
   const iv=setInterval(()=>{
     step++;const t=step/steps;
-    out.volume=_bgmTargetVol*(1-t);inn.volume=_bgmTargetVol*t;
+    if(og)og.gain.value=1-t;else out.volume=_bgmTargetVol*(1-t);
+    if(ig)ig.gain.value=t;else inn.volume=_bgmTargetVol*t;
     if(step>=steps){clearInterval(iv);out.pause();out.currentTime=0;_activeBgm=inn;_nextBgm=out;_crossfading=false;}
   },50);
 }
@@ -545,13 +556,14 @@ function _doCrossfade(){
 function _loadVol(){
   const mv=parseFloat(localStorage.getItem('vol_music')??'0.5');
   const sv=parseFloat(localStorage.getItem('vol_sfx')??'1');
-  _bgmTargetVol=mv*0.5;_activeBgm.volume=_bgmTargetVol;
+  _bgmTargetVol=mv*0.25;
+  if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else _activeBgm.volume=_bgmTargetVol;
   if(_sfxGain)_sfxGain.gain.value=sv;
   const ms=document.getElementById('volMusic');if(ms)ms.value=mv;
   const ss=document.getElementById('volSfx');if(ss)ss.value=sv;
 }
 function _saveVol(type,val){localStorage.setItem('vol_'+type,val);}
-window.setMusicVol=v=>{_bgmTargetVol=parseFloat(v)*0.5;if(!_crossfading)_activeBgm.volume=_bgmTargetVol;_saveVol('music',v);};
+window.setMusicVol=v=>{_bgmTargetVol=parseFloat(v)*0.25;if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else if(!_crossfading)_activeBgm.volume=_bgmTargetVol;_saveVol('music',v);};
 window.setSfxVol=v=>{if(_sfxGain)_sfxGain.gain.value=parseFloat(v);_saveVol('sfx',v);};
 window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_sfxGain||_AC.destination);s.start(0);}}
