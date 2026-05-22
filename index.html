@@ -234,13 +234,10 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     <div id="stepMain">
       <label class="field-label" id="labelName">Il tuo nome</label>
       <input class="txt" id="nameInput" placeholder="Nome…" maxlength="18"/>
-      <button class="btn btn-red" id="btnCreateMain" onclick="showCreate()">Crea Stanza</button>
+      <button class="btn btn-red" id="btnCreateMain" onclick="createRoom()">Crea Stanza</button>
       <button class="btn btn-green" id="btnJoinMain" onclick="showJoin()">Entra nella Stanza</button>
     </div>
-    <div id="stepCreate" style="display:none">
-      <button class="btn btn-red" id="btnCreateCreate" onclick="createRoom()">Crea Stanza</button>
-      <button class="btn btn-ghost" id="btnBackCreate" onclick="backToMain()">← Indietro</button>
-    </div>
+
     <div id="stepJoin" style="display:none">
       <label class="field-label" id="labelRoomCodeJoin">Codice Stanza</label>
       <input class="txt code-input" id="codeInput" placeholder="XXXX" maxlength="4" oninput="this.value=this.value.toUpperCase()"/>
@@ -444,8 +441,6 @@ function applyLang(){
   setText('labelRoomCodeRoom',en?'Room Code':'Codice Stanza');
   setText('btnCreateMain',en?'Create Room':'Crea Stanza');
   setText('btnJoinMain',en?'Join Room':'Entra nella Stanza');
-  setText('btnCreateCreate',en?'Create Room':'Crea Stanza');
-  setText('btnBackCreate',en?'← Back':'← Indietro');
   setText('btnJoinJoin',en?'Join':'Entra');
   setText('btnBackJoin',en?'← Back':'← Indietro');
   setText('playersLabelText',en?'Players':'Giocatori');
@@ -642,7 +637,7 @@ renderDeckChart();
 applyLang();
 
 // ── Lobby ─────────────────────────────────────────────
-function showStep(id){['stepMain','stepCreate','stepJoin','stepRoom'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
+function showStep(id){['stepMain','stepJoin','stepRoom'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
 function setError(m){document.getElementById('errorMsg').textContent=m;}
 function getName(){const n=document.getElementById('nameInput').value.trim();if(!n){setError(tr('Inserisci il tuo nome.','Enter your name.'));return null;}return n;}
 function genCode(){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ';return Array.from({length:4},()=>c[Math.floor(Math.random()*26)]).join('');}
@@ -651,7 +646,6 @@ function renderPlayers(players){
   document.getElementById('playersList').innerHTML=players.map((p,i)=>`<div class="player-row"><div class="player-avatar">${p[0].toUpperCase()}</div><span style="font-size:14px">${p}${i===0?' (Host)':''}</span></div>`).join('');
   const sb=document.getElementById('startBtn');if(sb)sb.textContent=tr(`Inizia il Gioco (${players.length} giocatori)`,`Start Game (${players.length} players)`);
 }
-window.showCreate=()=>showStep('stepCreate');
 window.showJoin=()=>showStep('stepJoin');
 window.backToMain=()=>{showStep('stepMain');setError('');};
 
@@ -936,7 +930,7 @@ function render(opts={}){
    const thead=`<thead><tr><th></th>${names.map(n=>`<th>${n}</th>`).join('')}</tr></thead>`;
    let rows='';
    rows+=`<tr><td>${tr('Scope','Scopa')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
-   rows+=`<tr><td>${tr('Carte','Cards')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
+   rows+=`<tr><td>${'Carte'}</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
    rows+=`<tr><td>Denari</td>${names.map((_,i)=>gcell(gt.map(t=>t.denari),i)).join('')}</tr>`;
    rows+=`<tr><td>Settebello</td>${names.map((_,i)=>gcell(gt.map(t=>t.settebello),i)).join('')}</tr>`;
    rows+=`<tr><td>Primiera</td>${names.map((_,i)=>gcell(gt.map(t=>t.primiera),i)).join('')}</tr>`;
@@ -1046,7 +1040,7 @@ function applyMove(gs,pIdx,card,selCaps){
     gs.table=gs.table.filter(c=>!ids.has(c.id));
     gs.captured[pIdx]=[...gs.captured[pIdx],card,...chosen];
     gs.lastCapture=pIdx;
-    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;gs.lastScopaBy=pIdx;flashScopa('SCOPA!');}
+    if(gs.table.length===0&&(gs.deck.length>0||gs.hands.some(h=>h.length>0))){gs.scopas[pIdx]++;gs.lastScopaBy=pIdx;flashScopa('SCOPA!');}
     else SFX.capture();
   }
   return advance(gs);
@@ -1112,7 +1106,7 @@ function showRoundScoreboard(gs){
   let rows='';
   rows+=`<tr><td>${tr('Inizio Round','Round Start')}</td>${names.map((_,i)=>`<td><span class="pts-cell">${scoresBefore[i]}</span></td>`).join('')}</tr>`;
   rows+=`<tr><td>${tr('Scope','Scopa')}</td>${names.map((_,i)=>`<td><span class="pts-cell${detail.scopas[i]>0?' scored':''}">${detail.scopas[i]}</span></td>`).join('')}</tr>`;
-  rows+=`<tr><td>${tr('Carte','Cards')}</td>${names.map((_,i)=>cell(detail.carteWinner,i,detail.cardCounts[i])).join('')}</tr>`;
+  rows+=`<tr><td>${'Carte'}</td>${names.map((_,i)=>cell(detail.carteWinner,i,detail.cardCounts[i])).join('')}</tr>`;
   rows+=`<tr><td>Denari</td>${names.map((_,i)=>cell(detail.denariWinner,i,detail.denariCounts[i])).join('')}</tr>`;
   rows+=`<tr><td>Settebello</td>${names.map((_,i)=>cell(detail.settebelloWinner,i,null)).join('')}</tr>`;
   rows+=`<tr><td>Primiera</td>${names.map((_,i)=>cell(detail.primWinner,i,detail.primScores[i]!==null?detail.primScores[i]:'—')).join('')}</tr>`;
@@ -1215,7 +1209,7 @@ function endGame(gs,wi){
   const thead=`<thead><tr><th>${tr('Categoria','Category')}</th>${names.map(nm=>`<th>${nm}</th>`).join('')}</tr></thead>`;
   let rows='';
   rows+=`<tr><td>${tr('Scope','Scopa')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
-  rows+=`<tr><td>${tr('Carte','Cards')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
+  rows+=`<tr><td>${'Carte'}</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
   rows+=`<tr><td>Denari</td>${names.map((_,i)=>gcell(gt.map(t=>t.denari),i)).join('')}</tr>`;
   rows+=`<tr><td>Settebello</td>${names.map((_,i)=>gcell(gt.map(t=>t.settebello),i)).join('')}</tr>`;
   rows+=`<tr><td>Primiera</td>${names.map((_,i)=>gcell(gt.map(t=>t.primiera),i)).join('')}</tr>`;
