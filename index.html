@@ -500,8 +500,9 @@ let readyUnsub=null; // unsubscriber for the per-round ready listener
 let lastShownRoundEnd=-1; // prevents re-processing same roundEnd when ready:null fires the listener
 let gameTotalsAccum=null; // accumulated per-category points across all rounds, for game-over table
 
-// ── Sound Effects (disabled) ───────────────────────────
-const SFX={card(){},capture(){},scopa(){},shuffle(){},deal(){}};
+// ── Sound Effects ─────────────────────────────────────
+function _snd(url){return()=>{const a=new Audio(url);a.play().catch(()=>{});}}
+const SFX={card:_snd('place.wav'),deal:_snd('place.wav'),capture:_snd('slide.wav'),scopa:_snd('sweep.wav'),shuffle:_snd('shuffle.wav')};
 
 // ── Boot ──────────────────────────────────────────────
 const DISPLAY_SUITS=['Denari','Coppe','Spade','Bastoni'];
@@ -637,7 +638,7 @@ function beginGame(gs,pi){
   lastShownRoundEnd=-1;gameTotalsAccum=null;
   showScreen('sGame');
   if(roomCode){setupPresence(pi);startListening();}
-  SFX.deal();
+  SFX.shuffle();setTimeout(()=>SFX.deal(),850);
   if(GS.phase==='roundEnd'){lastShownRoundEnd=GS.round;showRoundScoreboard(GS);}
   else render();
 }
@@ -684,14 +685,16 @@ function startListening(){
       pendingCard        =remote.previewCard||null;
       pendingCapture     =remote.previewCapture||null;
       pendingTableBefore =remote.previewTableBefore||null;
-      if(pendingCapture&&pendingCapture.length>0)SFX.capture();else SFX.card();
+      SFX.card();
       render();
       return;
     }
 
+    const hadCapture=pendingCapture&&pendingCapture.length>0;
     pendingCard=null;pendingCapture=null;pendingTableBefore=null;
 
     if(remote.lastScopaBy!==null&&remote.lastScopaBy!==undefined)flashScopa('SCOPA!');
+    else if(hadCapture)SFX.capture();
 
     if(remote.phase==='roundEnd'){
       if(remote.round===lastShownRoundEnd)return; // ready:null update re-fires listener with stale state; ignore
@@ -705,10 +708,14 @@ function startListening(){
     document.getElementById('roundOverlay').style.display='none';
     document.getElementById('firstPickOverlay').style.display='none';
     closeDrawer();
+    const isNewRound=GS&&remote.round>GS.round;
+    const isMidDeal=GS&&remote.round===GS.round&&remote.hands[PI]&&GS.hands[PI]&&remote.hands[PI].length>GS.hands[PI].length;
     GS=remote;
     totalScores=[...remote.scores];
     selectedCard=null;selectedCaptures=[];possibleCaptures=[];
     if(!document.getElementById('sGame').classList.contains('active'))showScreen('sGame');
+    if(isNewRound){SFX.shuffle();setTimeout(()=>SFX.deal(),850);}
+    else if(isMidDeal)SFX.deal();
     render();
   });
 }
@@ -1044,7 +1051,7 @@ function proceedAfterRound(gs,newTotal,winner){
     return;
   }
 
-  SFX.shuffle();
+  SFX.shuffle();setTimeout(()=>SFX.deal(),850);
 
   // Start new round — only host generates new state to avoid duplicates
   if(!roomCode||isHost){
