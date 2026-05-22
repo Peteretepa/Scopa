@@ -162,11 +162,11 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 #rulesBtn:hover{background:rgba(200,168,80,.22)}
 
 /* ── GAME OVER ── */
-#sGameOver{flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;background:radial-gradient(ellipse at 50% 40%,#2a1800 0%,var(--bg) 70%)}
+#sGameOver{flex-direction:column;align-items:center;justify-content:flex-start;padding:36px 20px 32px;overflow-y:auto;text-align:center;background:radial-gradient(ellipse at 50% 40%,#2a1800 0%,var(--bg) 70%)}
 .go-sub{font-size:12px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-family:'IM Fell English SC',serif}
 .go-winner{font-size:56px;color:#ffd700;margin-bottom:6px;text-shadow:0 0 30px rgba(255,215,0,.4)}
-.go-subtitle{font-size:15px;color:var(--gold);margin-bottom:28px;font-style:italic}
-.go-scores{background:rgba(255,255,255,.05);border:1px solid rgba(200,168,80,.25);border-radius:10px;padding:20px 28px;margin-bottom:24px;min-width:240px}
+.go-subtitle{font-size:15px;color:var(--gold);margin-bottom:22px;font-style:italic}
+.go-table-wrap{width:100%;max-width:560px;background:#120e00;border:1px solid rgba(200,168,80,.38);border-radius:10px;overflow:hidden;margin-bottom:22px;padding:0 20px}
 </style>
 </head>
 <body>
@@ -251,7 +251,9 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="go-sub">Partita Finita</div>
   <div class="go-winner" id="goWinner"></div>
   <div class="go-subtitle">ha vinto la partita!</div>
-  <div class="go-scores" id="goScores"></div>
+  <div class="go-table-wrap">
+    <table class="round-table" id="goTable"></table>
+  </div>
   <div id="goActions"></div>
 </div>
 
@@ -445,6 +447,7 @@ let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
 let readyUnsub=null; // unsubscriber for the per-round ready listener
 let lastShownRoundEnd=-1; // prevents re-processing same roundEnd when ready:null fires the listener
+let gameTotalsAccum=null; // accumulated per-category points across all rounds, for game-over table
 
 // ── Boot ──────────────────────────────────────────────
 document.getElementById('titleSuits').innerHTML=SUITS.map(s=>suitSVG(s,22)).join('');
@@ -556,7 +559,7 @@ function beginGame(gs,pi){
   GS=sanitizeGS(gs);PI=pi;
   totalScores=[...GS.scores];
   selectedCard=null;selectedCaptures=[];possibleCaptures=[];
-  lastShownRoundEnd=-1;
+  lastShownRoundEnd=-1;gameTotalsAccum=null;
   showScreen('sGame');
   if(roomCode)startListening();
   render();
@@ -839,6 +842,15 @@ function showRoundScoreboard(gs){
   // Compute round detail from the gs snapshot (before new round starts)
   const n=gs.playerNames.length;
   const detail=calcRoundDetail(gs);
+  // Accumulate per-category totals for game-over table
+  if(!gameTotalsAccum||gameTotalsAccum.length!==n)gameTotalsAccum=gs.playerNames.map(()=>({scopas:0,carte:0,denari:0,settebello:0,primiera:0}));
+  gameTotalsAccum=gameTotalsAccum.map((t,i)=>({
+    scopas:t.scopas+detail.scopas[i],
+    carte:t.carte+(detail.carteWinner===i?1:0),
+    denari:t.denari+(detail.denariWinner===i?1:0),
+    settebello:t.settebello+(detail.settebelloWinner===i?1:0),
+    primiera:t.primiera+(detail.primWinner===i?1:0),
+  }));
   const scoresBefore=totalScores.map((s,i)=>s); // totalScores not yet updated
   // Apply round points
   const newTotal=scoresBefore.map((s,i)=>s+detail.pts[i]);
@@ -957,7 +969,22 @@ function proceedAfterRound(gs,newTotal,winner){
 function endGame(gs,wi){
   showScreen('sGameOver');
   document.getElementById('goWinner').textContent='🏆 '+gs.playerNames[wi];
-  document.getElementById('goScores').innerHTML=gs.playerNames.map((n,i)=>`<div class="score-row"><span>${n}${i===PI?' (tu)':''}</span><span class="pts">${totalScores[i]} pt</span></div>`).join('');
+  const names=gs.playerNames,nn=names.length;
+  const gt=gameTotalsAccum||names.map(()=>({scopas:0,carte:0,denari:0,settebello:0,primiera:0}));
+  function gcell(vals,i){
+    const v=vals[i],mx=Math.max(...vals);
+    const winner=mx>0&&vals.filter(x=>x===mx).length===1&&v===mx;
+    return `<td><span class="pts-cell${winner?' scored':''}">${v}</span></td>`;
+  }
+  const thead=`<thead><tr><th>Categoria</th>${names.map((nm,i)=>`<th>${nm}${i===PI?' (tu)':''}</th>`).join('')}</tr></thead>`;
+  let rows='';
+  rows+=`<tr><td>Scope</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
+  rows+=`<tr><td>Carte</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
+  rows+=`<tr><td>Denari</td>${names.map((_,i)=>gcell(gt.map(t=>t.denari),i)).join('')}</tr>`;
+  rows+=`<tr><td>Settebello</td>${names.map((_,i)=>gcell(gt.map(t=>t.settebello),i)).join('')}</tr>`;
+  rows+=`<tr><td>Primiera</td>${names.map((_,i)=>gcell(gt.map(t=>t.primiera),i)).join('')}</tr>`;
+  rows+=`<tr class="total-row"><td>Totale</td>${names.map((_,i)=>`<td style="${i===wi?'color:#ffd700':''}">${totalScores[i]}</td>`).join('')}</tr>`;
+  document.getElementById('goTable').innerHTML=thead+`<tbody>${rows}</tbody>`;
   if(roomCode){
     if(isHost)update(ref(db,`rooms/${roomCode}`),{ready:null}); // only host clears, prevents double-cascade
     if(isHost){
