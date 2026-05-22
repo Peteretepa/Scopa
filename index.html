@@ -443,6 +443,7 @@ let roomCode=null,myName='',isHost=false,stateUnsub=null;
 let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
 // Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
+let readyUnsub=null; // unsubscriber for the per-round ready listener
 
 // ── Boot ──────────────────────────────────────────────
 document.getElementById('titleSuits').innerHTML=SUITS.map(s=>suitSVG(s,22)).join('');
@@ -566,6 +567,21 @@ function startListening(){
   stateUnsub=onValue(ref(db,`rooms/${roomCode}`),async snap=>{
     if(!snap.exists())return;
     const room=snap.val();
+
+    // Game-over screen: only allow play-again transitions; ignore all game state replays
+    if(document.getElementById('sGameOver').classList.contains('active')){
+      if(room.picking&&!isHost&&document.getElementById('firstPickOverlay').style.display==='none'){
+        showFirstPickUI(room.players||(GS?GS.playerNames:[]));
+        return;
+      }
+      if(room.state&&room.state.phase==='play'&&room.pushedBy!==PI){
+        document.getElementById('firstPickOverlay').style.display='none';
+        const ng=sanitizeGS(deepCopy(room.state));
+        beginGame(ng,ng.playerNames.indexOf(myName));
+        return;
+      }
+      return;
+    }
 
     // Play-again: host triggered who-goes-first picker
     if(room.picking&&!isHost){
@@ -751,17 +767,19 @@ window.playCard=async()=>{
   gs=applyMove(gs,pIdx,cardPlayed,chosenCap?[chosenCap]:[]);
   if(!gs)return;
   GS=gs;
+
+  // Push final state FIRST so all players receive it and start animations simultaneously
+  if(roomCode){
+    stopListening();
+    await pushState(GS);
+    startListening();
+  }
+
   if(GS.phase==='roundEnd'){
     if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
     render();
-  }
-
-  if(roomCode){
-    stopListening();
-    await pushState(GS);
-    startListening();
   }
 };
 
@@ -869,14 +887,15 @@ function showRoundScoreboard(gs){
 
   // Listen for ready signals in Firebase
   if(roomCode){
-    onValue(ref(db,`rooms/${roomCode}/ready`),snap=>{
+    if(readyUnsub){readyUnsub();readyUnsub=null;}
+    readyUnsub=onValue(ref(db,`rooms/${roomCode}/ready`),snap=>{
       const readyMap=snap.val()||{};
       const readyCount=Object.keys(readyMap).filter(k=>readyMap[k]).length;
       const total=gs.playerNames.length;
       document.getElementById('waitingPlayers').textContent=
         readyCount<total?`In attesa: ${readyCount}/${total} pronti`:'';
-      if(readyCount>=total){
-        // Everyone ready — proceed
+      if(readyCount>=total&&readyUnsub){
+        readyUnsub();readyUnsub=null; // unsubscribe before proceeding to prevent double-fire
         proceedAfterRound(gs,newTotal,winner);
       }
     },{onlyOnce:false});
@@ -935,7 +954,7 @@ function endGame(gs,wi){
   document.getElementById('goWinner').textContent='🏆 '+gs.playerNames[wi];
   document.getElementById('goScores').innerHTML=gs.playerNames.map((n,i)=>`<div class="score-row"><span>${n}${i===PI?' (tu)':''}</span><span class="pts">${totalScores[i]} pt</span></div>`).join('');
   if(roomCode){
-    update(ref(db,`rooms/${roomCode}`),{ready:null});
+    if(isHost)update(ref(db,`rooms/${roomCode}`),{ready:null}); // only host clears, prevents double-cascade
     if(isHost){
       document.getElementById('goActions').innerHTML=`<button class="btn btn-red" style="max-width:220px;margin-top:8px" onclick="hostPlayAgain()">Play Again</button>`;
     } else {
