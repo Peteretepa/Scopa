@@ -219,8 +219,8 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     <div id="stepRoom" style="display:none">
       <div style="text-align:center;margin-bottom:18px">
         <div class="field-label" style="text-align:center">Codice Stanza</div>
-        <div class="room-code-big" id="roomCodeDisplay"></div>
-        <div class="room-code-hint">Condividi con i tuoi amici</div>
+        <div class="room-code-big" id="roomCodeDisplay" style="cursor:pointer" onclick="copyLobbyCode()"></div>
+        <div class="room-code-hint" id="lobbyCodeHint">Condividi con i tuoi amici</div>
       </div>
       <div class="players-list-label">Giocatori (<span id="playerCount">0</span>/4)</div>
       <div id="playersList" style="margin-bottom:16px"></div>
@@ -1173,6 +1173,14 @@ function sanitizeGS(gs){
 }
 
 // ── UI helpers ────────────────────────────────────────
+window.copyLobbyCode=()=>{
+  if(!roomCode)return;
+  navigator.clipboard.writeText(roomCode).then(()=>{
+    const hint=document.getElementById('lobbyCodeHint');
+    hint.textContent='Copiato!';
+    setTimeout(()=>hint.textContent='Condividi con i tuoi amici',1200);
+  });
+};
 window.copyRoomCode=()=>{
   if(!roomCode)return;
   navigator.clipboard.writeText(roomCode).then(()=>{
