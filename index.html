@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -144,12 +144,10 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .score-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:.5px solid rgba(200,168,80,.12);font-size:15px}
 .score-row .pts{font-weight:bold;color:#ffd700}
 .overlay-close{font-size:10px;color:rgba(200,168,80,.4);text-align:center;margin-top:14px;cursor:pointer;letter-spacing:2px}
-.log-panel{position:fixed;right:0;top:0;bottom:0;width:270px;background:rgba(8,5,0,.96);border-left:1px solid rgba(200,168,80,.18);z-index:50;display:flex;flex-direction:column;padding:12px}
-.log-header{display:flex;justify-content:space-between;margin-bottom:10px;align-items:center}
-.log-title{font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;font-family:'IM Fell English SC',serif}
-.log-close{background:none;border:none;color:var(--gold);font-size:18px;cursor:pointer}
-.log-entries{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-.log-entry{font-size:13px;color:rgba(200,168,80,.75);padding:4px 0;border-bottom:.5px solid rgba(200,168,80,.08);line-height:1.5;font-family:Georgia,serif}
+#langWidget{display:flex;gap:8px;margin:12px 0 16px;justify-content:center}
+.lang-btn{background:transparent;border:1px solid rgba(200,168,80,.3);border-radius:5px;color:rgba(200,168,80,.5);font-size:12px;padding:4px 14px;cursor:pointer;font-family:'IM Fell English SC',serif;letter-spacing:2px;transition:all .15s}
+.lang-btn:hover{color:var(--gold);border-color:rgba(200,168,80,.6)}
+.lang-btn.active{background:rgba(200,168,80,.15);color:var(--gold);border-color:rgba(200,168,80,.7)}
 .scopa-flash{position:fixed;top:28%;left:50%;transform:translateX(-50%);z-index:300;background:var(--red2);color:#ffd700;font-size:38px;font-weight:bold;padding:14px 36px;border-radius:10px;letter-spacing:5px;box-shadow:0 4px 24px rgba(176,32,32,.7);font-family:'IM Fell English SC',serif;animation:flashIn .3s ease;pointer-events:none;white-space:nowrap}
 @keyframes flashIn{from{opacity:0;transform:translateX(-50%) scale(.7)}to{opacity:1;transform:translateX(-50%) scale(1)}}
 .collection-flash{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);z-index:300;background:rgba(16,12,2,.93);border:1px solid rgba(200,168,80,.28);color:rgba(200,168,80,.82);font-size:14px;padding:13px 26px;border-radius:8px;font-family:'IM Fell English SC',serif;letter-spacing:2px;text-align:center;animation:collFade .35s ease;pointer-events:none;white-space:nowrap}
@@ -228,30 +226,34 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     <div class="title-main">Scopa</div>
     <div class="title-suits" id="titleSuits"></div>
   </div>
+  <div id="langWidget">
+    <button id="btnEN" class="lang-btn" onclick="setLang('en')">EN</button>
+    <button id="btnIT" class="lang-btn" onclick="setLang('it')">IT</button>
+  </div>
   <div class="lobby-card">
     <div id="stepMain">
-      <label class="field-label">Il tuo nome</label>
+      <label class="field-label" id="labelName">Il tuo nome</label>
       <input class="txt" id="nameInput" placeholder="Nome…" maxlength="18"/>
-      <button class="btn btn-red"   onclick="showCreate()">Crea Stanza</button>
-      <button class="btn btn-green" onclick="showJoin()">Entra nella Stanza</button>
+      <button class="btn btn-red" id="btnCreateMain" onclick="showCreate()">Crea Stanza</button>
+      <button class="btn btn-green" id="btnJoinMain" onclick="showJoin()">Entra nella Stanza</button>
     </div>
     <div id="stepCreate" style="display:none">
-      <button class="btn btn-red"   onclick="createRoom()">Crea Stanza</button>
-      <button class="btn btn-ghost" onclick="backToMain()">← Indietro</button>
+      <button class="btn btn-red" id="btnCreateCreate" onclick="createRoom()">Crea Stanza</button>
+      <button class="btn btn-ghost" id="btnBackCreate" onclick="backToMain()">← Indietro</button>
     </div>
     <div id="stepJoin" style="display:none">
-      <label class="field-label">Codice Stanza</label>
+      <label class="field-label" id="labelRoomCodeJoin">Codice Stanza</label>
       <input class="txt code-input" id="codeInput" placeholder="XXXX" maxlength="4" oninput="this.value=this.value.toUpperCase()"/>
-      <button class="btn btn-green" onclick="joinRoom()">Entra</button>
-      <button class="btn btn-ghost" onclick="backToMain()">← Indietro</button>
+      <button class="btn btn-green" id="btnJoinJoin" onclick="joinRoom()">Entra</button>
+      <button class="btn btn-ghost" id="btnBackJoin" onclick="backToMain()">← Indietro</button>
     </div>
     <div id="stepRoom" style="display:none">
       <div style="text-align:center;margin-bottom:18px">
-        <div class="field-label" style="text-align:center">Codice Stanza</div>
+        <div class="field-label" id="labelRoomCodeRoom" style="text-align:center">Codice Stanza</div>
         <div class="room-code-big" id="roomCodeDisplay" style="cursor:pointer" onclick="copyLobbyCode()"></div>
         <div class="room-code-hint" id="lobbyCodeHint">Condividi con i tuoi amici</div>
       </div>
-      <div class="players-list-label">Giocatori (<span id="playerCount">0</span>/4)</div>
+      <div class="players-list-label"><span id="playersLabelText">Giocatori</span> (<span id="playerCount">0</span>/4)</div>
       <div id="playersList" style="margin-bottom:16px"></div>
       <div id="hostControls" style="display:none">
         <button class="btn btn-red" id="startBtn" onclick="hostStart()">Inizia il Gioco</button>
@@ -271,7 +273,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     </div>
     <div class="topbar-info" id="topInfo"></div>
     <div class="topbar-btns">
-      <button class="sm-btn" onclick="toggleScores()">Punteggi</button>
+      <button class="sm-btn" id="scoresBtn" onclick="toggleScores()">Punteggi</button>
     </div>
   </div>
   <div class="game-inner">
@@ -297,9 +299,9 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 
 <!-- ═══ GAME OVER ═══ -->
 <div id="sGameOver" class="screen">
-  <div class="go-sub">Partita Finita</div>
+  <div class="go-sub" id="goSub">Partita Finita</div>
   <div class="go-winner" id="goWinner"></div>
-  <div class="go-subtitle">ha vinto la partita!</div>
+  <div class="go-subtitle" id="goSubtitle">ha vinto la partita!</div>
   <div class="go-table-wrap">
     <table class="round-table" id="goTable"></table>
   </div>
@@ -327,7 +329,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 <!-- ═══ FIRST PLAYER PICK OVERLAY ═══ -->
 <div class="overlay" id="firstPickOverlay" style="display:none">
   <div class="overlay-box" style="max-width:400px">
-    <div class="overlay-title">Chi Inizia?</div>
+    <div class="overlay-title" id="firstPickTitle">Chi Inizia?</div>
     <div id="firstPickContent"></div>
   </div>
 </div>
@@ -344,17 +346,10 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 <!-- misc overlays -->
 <div class="overlay" id="scoresOverlay" style="display:none" onclick="toggleScores()">
   <div class="overlay-box" onclick="event.stopPropagation()">
-    <div class="overlay-title" style="padding:0 20px 16px">Punteggi</div>
+    <div class="overlay-title" id="scoresOverlayTitle" style="padding:0 20px 16px">Punteggi</div>
     <div id="scoresOverlayContent"></div>
-    <div class="overlay-close" style="padding:14px 20px 0" onclick="toggleScores()">TOCCA PER CHIUDERE</div>
+    <div class="overlay-close" id="overlayCloseBtn" style="padding:14px 20px 0" onclick="toggleScores()">TOCCA PER CHIUDERE</div>
   </div>
-</div>
-<div class="log-panel" id="logPanel" style="display:none">
-  <div class="log-header">
-    <div class="log-title">Registro Mosse</div>
-    <button class="log-close" onclick="toggleLog()">×</button>
-  </div>
-  <div class="log-entries" id="logEntries"></div>
 </div>
 <div class="scopa-flash" id="scopaFlash" style="display:none"></div>
 <div class="collection-flash" id="collectionFlash" style="display:none"></div>
@@ -391,7 +386,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 <!-- ═══ DECK CHART DRAWER ═══ -->
 <div class="deck-drawer" id="deckDrawer">
   <div class="drawer-header">
-    <div class="drawer-title">Tutte le Carte</div>
+    <div class="drawer-title" id="deckDrawerTitle">Tutte le Carte</div>
     <button class="drawer-close" onclick="toggleDeckChart()">×</button>
   </div>
   <div class="deck-chart-wrap">
@@ -428,6 +423,47 @@ const SUIT_IMG={Coppe:'coppe.png',Denari:'denari.png',Spade:'spade.png',Bastoni:
 function suitImg(suit,sz=16){return `<img src="${SUIT_IMG[suit]}" width="${sz}" height="${sz}" style="object-fit:contain;vertical-align:middle" alt="${suit}">`;}
 // Keep suitSVG alias so any stale call still resolves
 const suitSVG=suitImg;
+
+// ── Language ──────────────────────────────────────────
+let lang=localStorage.getItem('scopa_lang')||'en';
+function tr(it,en){return lang==='it'?it:en;}
+function scopaStr(n){return lang==='it'?`${n} scope`:n===1?'1 Scopa':`${n} Scopas`;}
+function statsStr(cards,sc){return `${cards} ${tr('carte','cards')} · ${scopaStr(sc)}`;}
+window.setLang=l=>{lang=l;localStorage.setItem('scopa_lang',l);applyLang();};
+function applyLang(){
+  const en=lang==='en';
+  document.documentElement.lang=en?'en':'it';
+  const ge=id=>document.getElementById(id);
+  const setText=(id,tx)=>{const e=ge(id);if(e)e.textContent=tx;};
+  const setAttr=(id,attr,val)=>{const e=ge(id);if(e)e[attr]=val;};
+  const btnEN=ge('btnEN'),btnIT=ge('btnIT');
+  if(btnEN){btnEN.classList.toggle('active',en);btnIT.classList.toggle('active',!en);}
+  setAttr('nameInput','placeholder',en?'Name…':'Nome…');
+  setText('labelName',en?'Your Name':'Il tuo nome');
+  setText('labelRoomCodeJoin',en?'Room Code':'Codice Stanza');
+  setText('labelRoomCodeRoom',en?'Room Code':'Codice Stanza');
+  setText('btnCreateMain',en?'Create Room':'Crea Stanza');
+  setText('btnJoinMain',en?'Join Room':'Entra nella Stanza');
+  setText('btnCreateCreate',en?'Create Room':'Crea Stanza');
+  setText('btnBackCreate',en?'← Back':'← Indietro');
+  setText('btnJoinJoin',en?'Join':'Entra');
+  setText('btnBackJoin',en?'← Back':'← Indietro');
+  setText('playersLabelText',en?'Players':'Giocatori');
+  setText('guestWait',en?'Waiting for host…':"In attesa dell'host…");
+  setText('scoresBtn',en?'Scores':'Punteggi');
+  setText('firstPickTitle',en?'Who Goes First?':'Chi Inizia?');
+  setText('scoresOverlayTitle',en?'Scores':'Punteggi');
+  setText('overlayCloseBtn',en?'TAP TO CLOSE':'TOCCA PER CHIUDERE');
+  setText('deckDrawerTitle',en?'All Cards':'Tutte le Carte');
+  const deckBtn=ge('deckBtn');if(deckBtn)deckBtn.title=en?'Deck':'Mazzo';
+  const rulesBtn=ge('rulesBtn');if(rulesBtn)rulesBtn.title=en?'Rules':'Regole';
+  const rb=ge('readyBtn');if(rb&&!rb.disabled)rb.textContent=en?'Ready':'Sono Pronto';
+  const lch=ge('lobbyCodeHint');
+  if(lch&&(lch.textContent==='Condividi con i tuoi amici'||lch.textContent==='Share with your friends'))
+    lch.textContent=en?'Share with your friends':'Condividi con i tuoi amici';
+  setText('goSub',en?'Game Over':'Partita Finita');
+  setText('goSubtitle',en?'wins the game!':'ha vinto la partita!');
+}
 
 // ── Deck ─────────────────────────────────────────────
 function buildDeck(){const d=[];for(const s of SUITS)for(const v of VALS)d.push({suit:s,value:v,id:`${v}-${s}`});return d;}
@@ -492,7 +528,7 @@ function createGameState(names,dealer=0){
   return{deck,table,hands,captured:names.map(()=>[]),scopas:names.map(()=>0),
     currentTurn:(dealer+1)%names.length,dealer,round:1,scores:names.map(()=>0),
     lastCapture:null,lastScopaBy:null,phase:'play',playerNames:[...names],
-    log:[`Round 1 inizia. Turno di ${names[(dealer+1)%names.length]}.`]};
+    log:[]};
 }
 
 // ── App state ─────────────────────────────────────────
@@ -603,16 +639,17 @@ const DISPLAY_SUITS=['Denari','Coppe','Spade','Bastoni'];
 document.getElementById('titleSuits').innerHTML=DISPLAY_SUITS.map(s=>suitImg(s,28)).join('');
 document.getElementById('topSuits').innerHTML=DISPLAY_SUITS.map(s=>suitImg(s,18)).join('');
 renderDeckChart();
+applyLang();
 
 // ── Lobby ─────────────────────────────────────────────
 function showStep(id){['stepMain','stepCreate','stepJoin','stepRoom'].forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none';});}
 function setError(m){document.getElementById('errorMsg').textContent=m;}
-function getName(){const n=document.getElementById('nameInput').value.trim();if(!n){setError('Inserisci il tuo nome.');return null;}return n;}
+function getName(){const n=document.getElementById('nameInput').value.trim();if(!n){setError(tr('Inserisci il tuo nome.','Enter your name.'));return null;}return n;}
 function genCode(){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ';return Array.from({length:4},()=>c[Math.floor(Math.random()*26)]).join('');}
 function renderPlayers(players){
   document.getElementById('playerCount').textContent=players.length;
   document.getElementById('playersList').innerHTML=players.map((p,i)=>`<div class="player-row"><div class="player-avatar">${p[0].toUpperCase()}</div><span style="font-size:14px">${p}${i===0?' (Host)':''}</span></div>`).join('');
-  const sb=document.getElementById('startBtn');if(sb)sb.textContent=`Inizia il Gioco (${players.length} giocatori)`;
+  const sb=document.getElementById('startBtn');if(sb)sb.textContent=tr(`Inizia il Gioco (${players.length} giocatori)`,`Start Game (${players.length} players)`);
 }
 window.showCreate=()=>showStep('stepCreate');
 window.showJoin=()=>showStep('stepJoin');
@@ -628,22 +665,22 @@ window.createRoom=async()=>{
 window.joinRoom=async()=>{
   const name=getName();if(!name)return;
   const code=document.getElementById('codeInput').value.toUpperCase().trim();
-  if(code.length!==4){setError('Il codice deve avere 4 caratteri.');return;}
+  if(code.length!==4){setError(tr('Il codice deve avere 4 caratteri.','The code must be 4 characters.'));return;}
   const snap=await get(ref(db,`rooms/${code}`));
-  if(!snap.exists()){setError('Stanza non trovata.');return;}
+  if(!snap.exists()){setError(tr('Stanza non trovata.','Room not found.'));return;}
   const room=snap.val();
 
   if(room.started&&room.state){
     // Game in progress — only allow reconnect by matching name
     const gs=sanitizeGS(deepCopy(room.state));
     const pi=gs.playerNames.indexOf(name);
-    if(pi<0){setError('La partita è già iniziata.');return;}
+    if(pi<0){setError(tr('La partita è già iniziata.','The game has already started.'));return;}
     // Check if game is abandoned (all players disconnected)
     const connected=room.connected||{};
     const anyConnected=Object.keys(connected).length>0&&gs.playerNames.some((_,i)=>connected[String(i)]===true);
     if(!anyConnected&&Object.keys(connected).length>0){
       await remove(ref(db,`rooms/${code}`));
-      setError('La partita è finita. Crea una nuova stanza.');
+      setError(tr('La partita è finita. Crea una nuova stanza.','The game has ended. Create a new room.'));
       return;
     }
     myName=name;isHost=(pi===0);roomCode=code;
@@ -652,7 +689,7 @@ window.joinRoom=async()=>{
     return;
   }
 
-  if(room.players&&room.players.length>=4){setError('Stanza piena (max 4 giocatori).');return;}
+  if(room.players&&room.players.length>=4){setError(tr('Stanza piena (max 4 giocatori).','Room full (max 4 players).'));return;}
   const players=[...(room.players||[]),name];
   myName=name;isHost=false;roomCode=code;
   await update(ref(db,`rooms/${code}`),{players});
@@ -686,7 +723,7 @@ function listenRoom(code){
 window.hostStart=async()=>{
   const snap=await get(ref(db,`rooms/${roomCode}`));if(!snap.exists())return;
   const room=snap.val();
-  if(!room.players||room.players.length<2){setError('Servono almeno 2 giocatori.');return;}
+  if(!room.players||room.players.length<2){setError(tr('Servono almeno 2 giocatori.','At least 2 players are needed.'));return;}
   await update(ref(db,`rooms/${roomCode}`),{picking:true});
   showFirstPickUI(room.players);
 };
@@ -694,9 +731,9 @@ window.hostStart=async()=>{
 function showFirstPickUI(players){
   const content=document.getElementById('firstPickContent');
   if(isHost){
-    content.innerHTML=`<div style="font-size:13px;color:rgba(200,168,80,.6);text-align:center;margin-bottom:16px">Scegli chi inizia il gioco</div>${players.map((p,i)=>`<button class="btn btn-dark" onclick="confirmFirstPlayer(${i})">${p}</button>`).join('')}<button class="btn btn-ghost" style="margin-top:4px" onclick="confirmFirstPlayer(-1)">Casuale</button>`;
+    content.innerHTML=`<div style="font-size:13px;color:rgba(200,168,80,.6);text-align:center;margin-bottom:16px">${tr('Scegli chi inizia il gioco','Choose who starts the game')}</div>${players.map((p,i)=>`<button class="btn btn-dark" onclick="confirmFirstPlayer(${i})">${p}</button>`).join('')}<button class="btn btn-ghost" style="margin-top:4px" onclick="confirmFirstPlayer(-1)">${tr('Casuale','Random')}</button>`;
   } else {
-    content.innerHTML=`<div class="waiting-msg" style="padding:20px 0">L'host sta scegliendo chi inizia…</div>`;
+    content.innerHTML=`<div class="waiting-msg" style="padding:20px 0">${tr("L'host sta scegliendo chi inizia…","The host is choosing who goes first…")}</div>`;
   }
   document.getElementById('firstPickOverlay').style.display='flex';
 }
@@ -830,7 +867,7 @@ function showScreen(id){
 // ── Render ────────────────────────────────────────────
 function render(opts={}){
   if(!GS)return;
-  document.getElementById('topInfo').textContent=`Round ${GS.round} · ${GS.deck.length} carte`;
+  document.getElementById('topInfo').textContent=`Round ${GS.round} · ${GS.deck.length} ${tr('carte','cards')}`;
 
   // Opponents
   const oa=document.getElementById('opponentsArea');oa.innerHTML='';
@@ -838,7 +875,7 @@ function render(opts={}){
     if(i===PI)return;
     const active=GS.currentTurn===i;
     const backs=(opts.hideHands?[]:GS.hands[i]).map((_,idx)=>`<div class="card-back${opts.dealAnim?' deal-in':''}" style="width:60px;height:93px;margin-left:-20px${opts.dealAnim?`;animation-delay:${idx*200}ms`:''}"></div>`).join('');
-    oa.innerHTML+=`<div class="opp-hand"><div style="flex:1;min-width:0"><div class="opp-name${active?' active':''}">${name}${active?' ●':''}</div><div class="opp-stats">${GS.captured[i].length} carte · ${GS.scopas[i]} scope</div></div><div class="opp-cards" style="padding-left:20px">${backs}</div></div>`;
+    oa.innerHTML+=`<div class="opp-hand"><div style="flex:1;min-width:0"><div class="opp-name${active?' active':''}">${name}${active?' ●':''}</div><div class="opp-stats">${statsStr(GS.captured[i].length,GS.scopas[i])}</div></div><div class="opp-cards" style="padding-left:20px">${backs}</div></div>`;
   });
 
   // Table
@@ -846,7 +883,7 @@ function render(opts={}){
   const pendingCapIds=new Set((pendingCapture||[]).map(c=>c.id));
   const tableToShow=pendingCard?[...(pendingTableBefore||GS.table),pendingCard]:GS.table;
   if(tableToShow.length===0){
-    tc.innerHTML='<span class="table-empty">Il tavolo è vuoto</span>';
+    tc.innerHTML=`<span class="table-empty">${tr('Il tavolo è vuoto','The table is empty')}</span>`;
   } else {
     tc.innerHTML=tableToShow.map(c=>{
       const isPlayed=pendingCard&&c.id===pendingCard.id;
@@ -867,7 +904,7 @@ function render(opts={}){
 
   // Hand
   const myHand=opts.hideHands?[]:(GS.hands[PI].filter(c=>!pendingCard||c.id!==pendingCard.id));
-  document.getElementById('handStats').textContent=`${GS.captured[PI].length} carte · ${GS.scopas[PI]} scope`;
+  document.getElementById('handStats').textContent=statsStr(GS.captured[PI].length,GS.scopas[PI]);
   document.getElementById('handCards').innerHTML=myHand.map((c,idx)=>{
     const mt=GS.currentTurn===PI,sel=selectedCard?.id===c.id;
     let cls='card '+(opts.dealAnim?'deal-in ':'')+( mt?'clickable':'faded')+(sel?' selected':'');
@@ -879,23 +916,18 @@ function render(opts={}){
   const aa=document.getElementById('actionArea'),myTurn=GS.currentTurn===PI&&!pendingCard;
   if(myTurn&&selectedCard){
     const noCap=possibleCaptures.length===0;
-    aa.innerHTML=`<button class="play-btn${noCap?' no-cap':''}" onclick="playCard()">${noCap?'Sul Tavolo':'Cattura!'}</button>`;
+    aa.innerHTML=`<button class="play-btn${noCap?' no-cap':''}" onclick="playCard()">${noCap?tr('Sul Tavolo','To Table'):tr('Cattura!','Capture!')}</button>`;
   } else if(pendingCard){
     aa.innerHTML='';
   } else if(!myTurn){
-    aa.innerHTML=`<span class="turn-msg">Turno di ${GS.playerNames[GS.currentTurn]}…</span>`;
+    aa.innerHTML=`<span class="turn-msg">${tr(`Turno di ${GS.playerNames[GS.currentTurn]}…`,`${GS.playerNames[GS.currentTurn]}'s turn…`)}</span>`;
   } else {
-    aa.innerHTML='<span class="turn-msg">Scegli una carta</span>';
+    aa.innerHTML=`<span class="turn-msg">${tr('Scegli una carta','Choose a card')}</span>`;
   }
 
   // Scores bar
   const _primo=(GS.dealer+1)%GS.playerNames.length;
-  document.getElementById('scoresBar').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-cell"><div class="score-name">${name}${i===_primo?' (primo)':''}</div><div class="score-val${GS.currentTurn===i?' active':''}">${totalScores[i]}</div></div>`).join('');
-
-  // Log
-  const le=document.getElementById('logEntries');
-  le.innerHTML=GS.log.map(l=>`<div class="log-entry">${l}</div>`).join('');
-  le.scrollTop=le.scrollHeight;
+  document.getElementById('scoresBar').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-cell"><div class="score-name">${name}${i===_primo?tr(' (primo)',' (first)'):''}</div><div class="score-val${GS.currentTurn===i?' active':''}">${totalScores[i]}</div></div>`).join('');
 
   // Scores overlay — full category chart
   {const names=GS.playerNames;
@@ -903,12 +935,12 @@ function render(opts={}){
    const gcell=(vals,i)=>{const v=vals[i],mx=Math.max(...vals);const win=mx>0&&vals.filter(x=>x===mx).length===1&&v===mx;return `<td class="pts-cell${win?' scored':''}">${v}</td>`;};
    const thead=`<thead><tr><th></th>${names.map(n=>`<th>${n}</th>`).join('')}</tr></thead>`;
    let rows='';
-   rows+=`<tr><td>Scope</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
-   rows+=`<tr><td>Carte</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
+   rows+=`<tr><td>${tr('Scope','Scopa')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
+   rows+=`<tr><td>${tr('Carte','Cards')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
    rows+=`<tr><td>Denari</td>${names.map((_,i)=>gcell(gt.map(t=>t.denari),i)).join('')}</tr>`;
    rows+=`<tr><td>Settebello</td>${names.map((_,i)=>gcell(gt.map(t=>t.settebello),i)).join('')}</tr>`;
    rows+=`<tr><td>Primiera</td>${names.map((_,i)=>gcell(gt.map(t=>t.primiera),i)).join('')}</tr>`;
-   rows+=`<tr class="total-row"><td>Totale</td>${names.map((_,i)=>`<td>${totalScores[i]}</td>`).join('')}</tr>`;
+   rows+=`<tr class="total-row"><td>${tr('Totale','Total')}</td>${names.map((_,i)=>`<td>${totalScores[i]}</td>`).join('')}</tr>`;
    document.getElementById('scoresOverlayContent').innerHTML=`<div style="padding:0 20px;overflow-x:auto"><table class="round-table" style="width:100%">${thead}<tbody>${rows}</tbody></table></div>`;
   }
 }
@@ -1002,12 +1034,10 @@ window.playCard=async()=>{
 
 function applyMove(gs,pIdx,card,selCaps){
   const caps=findCaptures(card,gs.table);
-  let msg='';
   gs.lastScopaBy=null;
   gs.hands[pIdx]=gs.hands[pIdx].filter(c=>c.id!==card.id);
   if(caps.length===0){
     gs.table.push(card);
-    msg=`${gs.playerNames[pIdx]} gioca ${ITAL[card.value]} di ${card.suit} sul tavolo.`;
   } else {
     let chosen=selCaps.length>0?selCaps[0]:caps[0];
     const exact=caps.find(c=>c.length===1&&c[0].value===card.value);
@@ -1016,11 +1046,9 @@ function applyMove(gs,pIdx,card,selCaps){
     gs.table=gs.table.filter(c=>!ids.has(c.id));
     gs.captured[pIdx]=[...gs.captured[pIdx],card,...chosen];
     gs.lastCapture=pIdx;
-    msg=`${gs.playerNames[pIdx]} cattura con ${card.value} di ${card.suit}.`;
-    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;gs.lastScopaBy=pIdx;msg+=' — SCOPA!';flashScopa('SCOPA!');}
+    if(gs.table.length===0&&gs.hands.some(h=>h.length>0)){gs.scopas[pIdx]++;gs.lastScopaBy=pIdx;flashScopa('SCOPA!');}
     else SFX.capture();
   }
-  gs.log=[...gs.log,msg];
   return advance(gs);
 }
 
@@ -1031,7 +1059,6 @@ function advance(gs){
   if(gs.deck.length>=gs.playerNames.length*3){
     _lastAdvanceDealt=true;
     for(let i=0;i<gs.playerNames.length;i++)gs.hands[i]=gs.deck.splice(0,3);
-    gs.log.push('Nuove carte distribuite.');
     gs.currentTurn=(gs.currentTurn+1)%gs.playerNames.length;
     return gs;
   }
@@ -1081,35 +1108,29 @@ function showRoundScoreboard(gs){
     return `<td><span class="${cls}">${val}</span>${det}</td>`;
   }
 
-  let thead=`<thead><tr><th>Categoria</th>${names.map(n=>`<th>${n}</th>`).join('')}</tr></thead>`;
+  let thead=`<thead><tr><th>${tr('Categoria','Category')}</th>${names.map(n=>`<th>${n}</th>`).join('')}</tr></thead>`;
   let rows='';
-  // Start
-  rows+=`<tr><td>Inizio Round</td>${names.map((_,i)=>`<td><span class="pts-cell">${scoresBefore[i]}</span></td>`).join('')}</tr>`;
-  // Scope
-  rows+=`<tr><td>Scope</td>${names.map((_,i)=>`<td><span class="pts-cell${detail.scopas[i]>0?' scored':''}">${detail.scopas[i]}</span></td>`).join('')}</tr>`;
-  // Carte
-  rows+=`<tr><td>Carte</td>${names.map((_,i)=>cell(detail.carteWinner,i,detail.cardCounts[i])).join('')}</tr>`;
-  // Denari
+  rows+=`<tr><td>${tr('Inizio Round','Round Start')}</td>${names.map((_,i)=>`<td><span class="pts-cell">${scoresBefore[i]}</span></td>`).join('')}</tr>`;
+  rows+=`<tr><td>${tr('Scope','Scopa')}</td>${names.map((_,i)=>`<td><span class="pts-cell${detail.scopas[i]>0?' scored':''}">${detail.scopas[i]}</span></td>`).join('')}</tr>`;
+  rows+=`<tr><td>${tr('Carte','Cards')}</td>${names.map((_,i)=>cell(detail.carteWinner,i,detail.cardCounts[i])).join('')}</tr>`;
   rows+=`<tr><td>Denari</td>${names.map((_,i)=>cell(detail.denariWinner,i,detail.denariCounts[i])).join('')}</tr>`;
-  // Settebello
   rows+=`<tr><td>Settebello</td>${names.map((_,i)=>cell(detail.settebelloWinner,i,null)).join('')}</tr>`;
-  // Primiera
   rows+=`<tr><td>Primiera</td>${names.map((_,i)=>cell(detail.primWinner,i,detail.primScores[i]!==null?detail.primScores[i]:'—')).join('')}</tr>`;
-  // Total
-  rows+=`<tr class="total-row"><td>Totale</td>${names.map((_,i)=>`<td>${newTotal[i]}</td>`).join('')}</tr>`;
+  rows+=`<tr class="total-row"><td>${tr('Totale','Total')}</td>${names.map((_,i)=>`<td>${newTotal[i]}</td>`).join('')}</tr>`;
 
   document.getElementById('roundTable').innerHTML=thead+`<tbody>${rows}</tbody>`;
-  document.getElementById('roundOverlayTitle').textContent=`Fine Round ${gs.round}`;
+  document.getElementById('roundOverlayTitle').textContent=tr(`Fine Round ${gs.round}`,`Round ${gs.round} Over`);
 
   const winner=newTotal.findIndex(s=>s>=11);
   document.getElementById('roundOverlaySubtitle').textContent=
-    winner>=0?`${gs.playerNames[winner]} vince la partita!`:`Prossimo round: Round ${gs.round+1}`;
+    winner>=0?tr(`${gs.playerNames[winner]} vince la partita!`,`${gs.playerNames[winner]} wins the game!`):tr(`Prossimo round: Round ${gs.round+1}`,`Next round: Round ${gs.round+1}`);
 
   // View-cards buttons
   document.getElementById('roundViewBtns').innerHTML=
-    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})"><span class="card-icon-nested"><span></span></span> Carte di ${name}</button>`).join('');
+    names.map((name,i)=>`<button class="view-cards-btn" onclick="openDrawer(${i})"><span class="card-icon-nested"><span></span></span> ${tr(`Carte di ${name}`,`${name}'s Cards`)}</button>`).join('');
 
   document.getElementById('readyBtn').disabled=false;
+  document.getElementById('readyBtn').textContent=tr('Sono Pronto','Ready');
   document.getElementById('waitingPlayers').textContent='';
   document.getElementById('roundOverlay').style.display='flex';
 
@@ -1121,7 +1142,7 @@ function showRoundScoreboard(gs){
       const readyCount=Object.keys(readyMap).filter(k=>readyMap[k]).length;
       const total=gs.playerNames.length;
       document.getElementById('waitingPlayers').textContent=
-        readyCount<total?`In attesa: ${readyCount}/${total} pronti`:'';
+        readyCount<total?tr(`In attesa: ${readyCount}/${total} pronti`,`Waiting: ${readyCount}/${total} ready`):'';
       if(readyCount>=total&&readyUnsub){
         readyUnsub();readyUnsub=null; // unsubscribe before proceeding to prevent double-fire
         proceedAfterRound(gs,newTotal,winner);
@@ -1135,7 +1156,7 @@ function showRoundScoreboard(gs){
 window.pressReady=async()=>{
   myReady=true;
   document.getElementById('readyBtn').disabled=true;
-  document.getElementById('readyBtn').textContent='Pronto ✓';
+  document.getElementById('readyBtn').textContent=tr('Pronto ✓','Ready ✓');
   if(roomCode){
     await update(ref(db,`rooms/${roomCode}/ready`),{[PI]:true});
   } else {
@@ -1167,7 +1188,7 @@ function proceedAfterRound(gs,newTotal,winner){
       captured:gs.playerNames.map(()=>[]),scopas:gs.playerNames.map(()=>0),
       round:nr,dealer:nd,currentTurn:(nd+1)%gs.playerNames.length,lastCapture:null,lastScopaBy:null,
       phase:'play',scores:[...newTotal],
-      log:[...gs.log,`=== Round ${nr} inizia. ===`]};
+      log:[]};
     GS=newGs;
     if(roomCode){
       // Clear ready flags then push new state
@@ -1182,6 +1203,7 @@ function proceedAfterRound(gs,newTotal,winner){
 
 function endGame(gs,wi){
   showScreen('sGameOver');
+  applyLang();
   document.getElementById('goWinner').textContent='🏆 '+gs.playerNames[wi];
   const names=gs.playerNames,nn=names.length;
   const gt=gameTotalsAccum||names.map(()=>({scopas:0,carte:0,denari:0,settebello:0,primiera:0}));
@@ -1190,14 +1212,14 @@ function endGame(gs,wi){
     const winner=mx>0&&vals.filter(x=>x===mx).length===1&&v===mx;
     return `<td><span class="pts-cell${winner?' scored':''}">${v}</span></td>`;
   }
-  const thead=`<thead><tr><th>Categoria</th>${names.map(nm=>`<th>${nm}</th>`).join('')}</tr></thead>`;
+  const thead=`<thead><tr><th>${tr('Categoria','Category')}</th>${names.map(nm=>`<th>${nm}</th>`).join('')}</tr></thead>`;
   let rows='';
-  rows+=`<tr><td>Scope</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
-  rows+=`<tr><td>Carte</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
+  rows+=`<tr><td>${tr('Scope','Scopa')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
+  rows+=`<tr><td>${tr('Carte','Cards')}</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
   rows+=`<tr><td>Denari</td>${names.map((_,i)=>gcell(gt.map(t=>t.denari),i)).join('')}</tr>`;
   rows+=`<tr><td>Settebello</td>${names.map((_,i)=>gcell(gt.map(t=>t.settebello),i)).join('')}</tr>`;
   rows+=`<tr><td>Primiera</td>${names.map((_,i)=>gcell(gt.map(t=>t.primiera),i)).join('')}</tr>`;
-  rows+=`<tr class="total-row"><td>Totale</td>${names.map((_,i)=>`<td style="${i===wi?'color:#ffd700':''}">${totalScores[i]}</td>`).join('')}</tr>`;
+  rows+=`<tr class="total-row"><td>${tr('Totale','Total')}</td>${names.map((_,i)=>`<td style="${i===wi?'color:#ffd700':''}">${totalScores[i]}</td>`).join('')}</tr>`;
   document.getElementById('goTable').innerHTML=thead+`<tbody>${rows}</tbody>`;
   if(roomCode){
     if(isHost)update(ref(db,`rooms/${roomCode}`),{ready:null}); // only host clears, prevents double-cascade
@@ -1207,7 +1229,7 @@ function endGame(gs,wi){
       document.getElementById('goActions').innerHTML=`<div class="waiting-msg" style="margin-top:16px">Waiting for host to start again…</div>`;
     }
   } else {
-    document.getElementById('goActions').innerHTML=`<button class="btn btn-red" style="max-width:220px;margin-top:8px" onclick="location.reload()">Nuova Partita</button>`;
+    document.getElementById('goActions').innerHTML=`<button class="btn btn-red" style="max-width:220px;margin-top:8px" onclick="location.reload()">${tr('Nuova Partita','New Game')}</button>`;
   }
 }
 
@@ -1218,7 +1240,7 @@ window.openDrawer=playerIdx=>{
   if(openDrawerIdx===playerIdx&&drawer.classList.contains('open')){closeDrawer();return;}
   const name=GS?GS.playerNames[playerIdx]:'';
   const cards=roundCapturedSnapshot[playerIdx]||[];
-  document.getElementById('drawerTitle').textContent=`Carte di ${name}`;
+  document.getElementById('drawerTitle').textContent=tr(`Carte di ${name}`,`${name}'s Cards`);
 
   const bySuit={Coppe:[],Denari:[],Spade:[],Bastoni:[]};
   for(const c of cards)bySuit[c.suit].push(c);
@@ -1232,12 +1254,12 @@ window.openDrawer=playerIdx=>{
   // Primiera first
   if(primScore!==null){
     html+=`<div class="drawer-section">
-      <div class="drawer-section-title">Primiera (${primScore} punti)</div>
+      <div class="drawer-section-title">Primiera (${primScore} ${tr('punti','points')})</div>
       <div class="drawer-cards">${primCards.map(c=>`<div class="card" style="width:72px;height:111px;outline:2px solid var(--gold);border-radius:7px">${cardHTML(c)}</div>`).join('')}</div>
-      <div class="primiera-box">${primCards.map(c=>`<div class="primiera-row"><span>${suitImg(c.suit,14)} ${c.suit}</span><span style="color:var(--parchment)">${ITAL[c.value]} → ${primVal(c.value)} pt</span></div>`).join('')}<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>Totale</span><span style="color:#ffd700">${primScore}</span></div></div>
+      <div class="primiera-box">${primCards.map(c=>`<div class="primiera-row"><span>${suitImg(c.suit,14)} ${c.suit}</span><span style="color:var(--parchment)">${ITAL[c.value]} → ${primVal(c.value)} pt</span></div>`).join('')}<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>${tr('Totale','Total')}</span><span style="color:#ffd700">${primScore}</span></div></div>
     </div>`;
   } else {
-    html+=`<div class="drawer-section"><div class="drawer-section-title" style="color:rgba(200,168,80,.35)">Primiera non qualificata (serve almeno una carta per ogni seme)</div></div>`;
+    html+=`<div class="drawer-section"><div class="drawer-section-title" style="color:rgba(200,168,80,.35)">${tr('Primiera non qualificata (serve almeno una carta per ogni seme)','Primiera not qualified (need at least one card per suit)')}</div></div>`;
   }
 
   // Suits in order: Denari, Coppe, Spade, Bastoni
@@ -1249,7 +1271,7 @@ window.openDrawer=playerIdx=>{
     </div>`;
   }
 
-  document.getElementById('drawerBody').innerHTML=html||'<div style="color:rgba(200,168,80,.4);font-style:italic;font-size:13px">Nessuna carta raccolta.</div>';
+  document.getElementById('drawerBody').innerHTML=html||`<div style="color:rgba(200,168,80,.4);font-style:italic;font-size:13px">${tr('Nessuna carta raccolta.','No cards collected.')}</div>`;
   openDrawerIdx=playerIdx;
   document.getElementById('cardsDrawer').classList.add('open');
   document.getElementById('cardsBackdrop').style.display='block';
@@ -1308,8 +1330,8 @@ window.copyLobbyCode=()=>{
   if(!roomCode)return;
   navigator.clipboard.writeText(roomCode).then(()=>{
     const hint=document.getElementById('lobbyCodeHint');
-    hint.textContent='Copiato!';
-    setTimeout(()=>hint.textContent='Condividi con i tuoi amici',1200);
+    hint.textContent=tr('Copiato!','Copied!');
+    setTimeout(()=>hint.textContent=tr('Condividi con i tuoi amici','Share with your friends'),1200);
   });
 };
 window.copyBannerCode=()=>{
@@ -1319,7 +1341,6 @@ window.copyBannerCode=()=>{
     if(el){el.textContent='Copied!';setTimeout(()=>{if(el)el.textContent=roomCode;},1200);}
   });
 };
-window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
 window.toggleRules=()=>{const d=document.getElementById('rulesDrawer'),b=document.getElementById('rulesBackdrop');const o=d.classList.toggle('open');b.style.display=o?'block':'none';};
 window.toggleDeckChart=()=>{const d=document.getElementById('deckDrawer'),b=document.getElementById('deckBackdrop');const o=d.classList.toggle('open');b.style.display=o?'block':'none';};
@@ -1337,7 +1358,7 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 <div id="deckBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="toggleDeckChart()"></div>
 <div id="cardsBackdrop" style="display:none;position:fixed;inset:0;z-index:199;cursor:default" onclick="closeDrawer()"></div>
 <div id="bottomBtns">
-  <button class="bb-btn" onclick="toggleDeckChart()" title="Mazzo"><span class="card-shape-icon"></span></button>
+  <button class="bb-btn" id="deckBtn" onclick="toggleDeckChart()" title="Mazzo"><span class="card-shape-icon"></span></button>
   <div style="position:relative">
     <button class="bb-btn" onclick="toggleAudioPanel()" title="Volume">♪</button>
     <div id="audioPanel">
@@ -1347,7 +1368,7 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
       <input type="range" id="volSfx" min="0" max="1" step="0.05" value="0.5" oninput="setSfxVol(this.value)">
     </div>
   </div>
-  <button class="bb-btn" onclick="toggleRules()" title="Regole" style="font-family:'IM Fell English SC',serif;font-size:19px">?</button>
+  <button class="bb-btn" id="rulesBtn" onclick="toggleRules()" title="Regole" style="font-family:'IM Fell English SC',serif;font-size:19px">?</button>
 </div>
 
 </body>
