@@ -47,6 +47,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 #sGame{flex-direction:column;background:radial-gradient(ellipse at 50% 50%,var(--felt2) 0%,var(--bg) 100%)}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid rgba(200,168,80,.18);background:rgba(0,0,0,.35);flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--gold)}
+#topSuits{display:inline-flex;gap:20px;align-items:center}
 .topbar-info{font-size:14px;color:rgba(200,168,80,.55);letter-spacing:1px}
 .topbar-btns{display:flex;gap:8px}
 .sm-btn{background:none;border:1px solid rgba(200,168,80,.25);border-radius:5px;color:var(--gold);font-size:13px;padding:4px 10px;cursor:pointer;font-family:inherit;letter-spacing:1px}
@@ -133,6 +134,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 /* ── MISC OVERLAYS ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;display:flex;align-items:center;justify-content:center}
 .overlay-box{background:#1a1000;border:1px solid rgba(200,168,80,.4);border-radius:12px;padding:28px;min-width:280px;max-width:360px;width:90%}
+#scoresOverlay .overlay-box{max-width:620px;width:94%;padding:20px 0 20px}
 .overlay-title{font-family:'IM Fell English SC',serif;font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:16px}
 .score-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:.5px solid rgba(200,168,80,.12);font-size:15px}
 .score-row .pts{font-weight:bold;color:#ffd700}
@@ -151,11 +153,11 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 /* ── RULES DRAWER ── */
 .rules-drawer{position:fixed;top:0;right:-100%;width:min(360px,95vw);height:100vh;background:#0e0a00;border-left:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:right .3s ease;overflow:hidden}
 .rules-drawer.open{right:0}
-.rules-content{flex:1;overflow-y:auto;padding:20px 18px;font-size:13px;line-height:1.85;color:rgba(253,243,220,.88)}
-.rules-heading{font-family:'IM Fell English SC',serif;font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(200,168,80,.2)}
+.rules-content{flex:1;overflow-y:auto;padding:20px 18px;font-size:14px;line-height:1.85;color:rgba(253,243,220,.88)}
+.rules-heading{font-family:'IM Fell English SC',serif;font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(200,168,80,.2)}
 .rule-block{margin-bottom:16px}
-.rule-name{color:var(--gold);font-family:'IM Fell English SC',serif;font-size:13px;letter-spacing:1px}
-.rule-sub{font-size:11px;color:rgba(200,168,80,.6);margin:4px 0 2px;font-style:italic}
+.rule-name{color:var(--gold);font-family:'IM Fell English SC',serif;font-size:14px;letter-spacing:1px}
+.rule-sub{font-size:12px;color:rgba(200,168,80,.6);margin:4px 0 2px;font-style:italic}
 .primiera-scores{margin:4px 0 4px 12px;display:grid;grid-template-columns:56px 1fr;row-gap:3px;font-size:15px;color:rgba(253,243,220,.7)}
 .rules-note{color:rgba(200,168,80,.5);font-style:italic;font-size:14px;margin-top:10px;text-align:center}
 #rulesBtn{position:fixed;bottom:20px;right:20px;z-index:250;width:38px;height:38px;border-radius:50%;background:rgba(200,168,80,.12);border:1px solid rgba(200,168,80,.38);color:var(--gold);font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'IM Fell English SC',serif;transition:background .15s;line-height:1}
@@ -235,7 +237,6 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
     </div>
     <div class="topbar-info" id="topInfo"></div>
     <div class="topbar-btns">
-      <button class="sm-btn" onclick="toggleLog()">Registro</button>
       <button class="sm-btn" onclick="toggleScores()">Punteggi</button>
     </div>
   </div>
@@ -309,9 +310,9 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 <!-- misc overlays -->
 <div class="overlay" id="scoresOverlay" style="display:none" onclick="toggleScores()">
   <div class="overlay-box" onclick="event.stopPropagation()">
-    <div class="overlay-title">Punteggi</div>
+    <div class="overlay-title" style="padding:0 20px 16px">Punteggi</div>
     <div id="scoresOverlayContent"></div>
-    <div class="overlay-close" onclick="toggleScores()">TOCCA PER CHIUDERE</div>
+    <div class="overlay-close" style="padding:14px 20px 0" onclick="toggleScores()">TOCCA PER CHIUDERE</div>
   </div>
 </div>
 <div class="log-panel" id="logPanel" style="display:none">
@@ -739,8 +740,20 @@ function render(){
   le.innerHTML=GS.log.map(l=>`<div class="log-entry">${l}</div>`).join('');
   le.scrollTop=le.scrollHeight;
 
-  // Scores overlay
-  document.getElementById('scoresOverlayContent').innerHTML=GS.playerNames.map((name,i)=>`<div class="score-row"><span>${name}${i===PI?' (tu)':''}</span><span class="pts">${totalScores[i]} pt</span></div>`).join('');
+  // Scores overlay — full category chart
+  {const names=GS.playerNames;
+   const gt=gameTotalsAccum||names.map(()=>({scopas:0,carte:0,denari:0,settebello:0,primiera:0}));
+   const gcell=(vals,i)=>{const v=vals[i],mx=Math.max(...vals);const win=mx>0&&vals.filter(x=>x===mx).length===1&&v===mx;return `<td class="pts-cell${win?' scored':''}">${v}</td>`;};
+   const thead=`<thead><tr><th></th>${names.map((n,i)=>`<th>${n}${i===PI?' (tu)':''}</th>`).join('')}</tr></thead>`;
+   let rows='';
+   rows+=`<tr><td>Scope</td>${names.map((_,i)=>gcell(gt.map(t=>t.scopas),i)).join('')}</tr>`;
+   rows+=`<tr><td>Carte</td>${names.map((_,i)=>gcell(gt.map(t=>t.carte),i)).join('')}</tr>`;
+   rows+=`<tr><td>Denari</td>${names.map((_,i)=>gcell(gt.map(t=>t.denari),i)).join('')}</tr>`;
+   rows+=`<tr><td>Settebello</td>${names.map((_,i)=>gcell(gt.map(t=>t.settebello),i)).join('')}</tr>`;
+   rows+=`<tr><td>Primiera</td>${names.map((_,i)=>gcell(gt.map(t=>t.primiera),i)).join('')}</tr>`;
+   rows+=`<tr class="total-row"><td>Totale</td>${names.map((_,i)=>`<td>${totalScores[i]}</td>`).join('')}</tr>`;
+   document.getElementById('scoresOverlayContent').innerHTML=`<div style="padding:0 20px;overflow-x:auto"><table class="round-table" style="width:100%">${thead}<tbody>${rows}</tbody></table></div>`;
+  }
 }
 
 function cardHTML(card){
@@ -1047,22 +1060,25 @@ window.openDrawer=playerIdx=>{
   const primScore=primieraScore(cards);
 
   let html='';
-  for(const suit of SUITS){
-    if(bySuit[suit].length===0)continue;
-    html+=`<div class="drawer-section">
-      <div class="drawer-section-title">${suitImg(suit,14)} ${suit} (${bySuit[suit].length})</div>
-      <div class="drawer-cards">${bySuit[suit].map(c=>`<div class="card" style="width:72px;height:111px">${cardHTML(c)}</div>`).join('')}</div>
-    </div>`;
-  }
 
+  // Primiera first
   if(primScore!==null){
     html+=`<div class="drawer-section">
       <div class="drawer-section-title">Primiera (${primScore} punti)</div>
-      <div class="drawer-cards">${primCards.map(c=>`<div class="card" style="width:48px;height:74px;outline:2px solid var(--gold);border-radius:7px">${cardHTML(c)}</div>`).join('')}</div>
+      <div class="drawer-cards">${primCards.map(c=>`<div class="card" style="width:72px;height:111px;outline:2px solid var(--gold);border-radius:7px">${cardHTML(c)}</div>`).join('')}</div>
       <div class="primiera-box">${primCards.map(c=>`<div class="primiera-row"><span>${suitImg(c.suit,14)} ${c.suit}</span><span style="color:var(--parchment)">${ITAL[c.value]} → ${primVal(c.value)} pt</span></div>`).join('')}<div class="primiera-row" style="border-top:.5px solid rgba(200,168,80,.2);margin-top:4px;padding-top:4px;font-weight:bold"><span>Totale</span><span style="color:#ffd700">${primScore}</span></div></div>
     </div>`;
   } else {
     html+=`<div class="drawer-section"><div class="drawer-section-title" style="color:rgba(200,168,80,.35)">Primiera non qualificata (serve almeno una carta per ogni seme)</div></div>`;
+  }
+
+  // Suits in order: Denari, Coppe, Spade, Bastoni
+  for(const suit of ['Denari','Coppe','Spade','Bastoni']){
+    if(bySuit[suit].length===0)continue;
+    html+=`<div class="drawer-section">
+      <div class="drawer-section-title">${suitImg(suit,14)} ${suit} (${bySuit[suit].length})</div>
+      <div class="drawer-cards">${bySuit[suit].map(c=>`<div class="card" style="width:48px;height:74px">${cardHTML(c)}</div>`).join('')}</div>
+    </div>`;
   }
 
   document.getElementById('drawerBody').innerHTML=html||'<div style="color:rgba(200,168,80,.4);font-style:italic;font-size:13px">Nessuna carta raccolta.</div>';
