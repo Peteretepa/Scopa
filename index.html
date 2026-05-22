@@ -496,6 +496,7 @@ let roomCode=null,myName='',isHost=false,stateUnsub=null;
 let disconnectedNames=[];
 let pendingCard=null,pendingCapture=null,pendingTableBefore=null;
 let _lastAdvanceDealt=false;
+let _dealAnimActive=false;
 // Round scoreboard state
 let roundData=null,roundCapturedSnapshot=null,myReady=false;
 let openDrawerIdx=-1;
@@ -514,6 +515,7 @@ if(_AC){
 }
 function _snd(url){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];s.connect(_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
+function _startDealAnim(){render({dealAnim:true});setTimeout(_deal3,200);setTimeout(()=>render(),650);}
 const SFX={card:_snd('place.wav'),deal:_snd('place.wav'),capture:_snd('slide.wav'),scopa:_snd('sweep.wav'),shuffle:_snd('shuffle.wav')};
 
 // ── Boot ──────────────────────────────────────────────
@@ -649,9 +651,10 @@ function beginGame(gs,pi){
   selectedCard=null;selectedCaptures=[];possibleCaptures=[];
   lastShownRoundEnd=-1;gameTotalsAccum=null;
   showScreen('sGame');
+  _dealAnimActive=true;
   if(roomCode){setupPresence(pi);startListening();}
   SFX.shuffle();
-  setTimeout(()=>{render({dealAnim:true});setTimeout(_deal3,200);},1600);
+  setTimeout(()=>{_dealAnimActive=false;_startDealAnim();},1600);
   if(GS.phase==='roundEnd'){lastShownRoundEnd=GS.round;showRoundScoreboard(GS);}
   else render({hideHands:true});
 }
@@ -727,9 +730,9 @@ function startListening(){
     totalScores=[...remote.scores];
     selectedCard=null;selectedCaptures=[];possibleCaptures=[];
     if(!document.getElementById('sGame').classList.contains('active'))showScreen('sGame');
-    if(isNewRound){SFX.shuffle();setTimeout(()=>{render({dealAnim:true});setTimeout(_deal3,200);},1600);render({hideHands:true});}
-    else if(isMidDeal){render({hideHands:true});await new Promise(r=>setTimeout(r,1000));render({dealAnim:true});setTimeout(_deal3,200);}
-    else render();
+    if(isNewRound){SFX.shuffle();setTimeout(_startDealAnim,1600);render({hideHands:true});}
+    else if(isMidDeal){render({hideHands:true});await new Promise(r=>setTimeout(r,1000));_startDealAnim();}
+    else if(!_dealAnimActive)render();
   });
 }
 function stopListening(){
@@ -909,8 +912,7 @@ window.playCard=async()=>{
     if(_lastAdvanceDealt){
       render({hideHands:true});
       await new Promise(r=>setTimeout(r,1000));
-      render({dealAnim:true});
-      setTimeout(_deal3,200);
+      _startDealAnim();
     } else {
       render();
     }
@@ -1074,7 +1076,7 @@ function proceedAfterRound(gs,newTotal,winner){
   }
 
   SFX.shuffle();
-  setTimeout(()=>{render({dealAnim:true});setTimeout(_deal3,200);},1600);
+  setTimeout(_startDealAnim,1600);
 
   // Start new round — only host generates new state to avoid duplicates
   if(!roomCode||isHost){
