@@ -145,6 +145,8 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
 .log-entry{font-size:10px;color:rgba(200,168,80,.75);padding:4px 0;border-bottom:.5px solid rgba(200,168,80,.08);line-height:1.5;font-family:Georgia,serif}
 .scopa-flash{position:fixed;top:28%;left:50%;transform:translateX(-50%);z-index:300;background:var(--red2);color:#ffd700;font-size:38px;font-weight:bold;padding:14px 36px;border-radius:10px;letter-spacing:5px;box-shadow:0 4px 24px rgba(176,32,32,.7);font-family:'IM Fell English SC',serif;animation:flashIn .3s ease;pointer-events:none;white-space:nowrap}
 @keyframes flashIn{from{opacity:0;transform:translateX(-50%) scale(.7)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.collection-flash{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);z-index:300;background:rgba(16,12,2,.93);border:1px solid rgba(200,168,80,.28);color:rgba(200,168,80,.82);font-size:14px;padding:13px 26px;border-radius:8px;font-family:'IM Fell English SC',serif;letter-spacing:2px;text-align:center;animation:collFade .35s ease;pointer-events:none;white-space:nowrap}
+@keyframes collFade{from{opacity:0;transform:translate(-50%,-50%) scale(.93)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 
 /* ── RULES DRAWER ── */
 .rules-drawer{position:fixed;top:0;right:-100%;width:min(360px,95vw);height:100vh;background:#0e0a00;border-left:1px solid rgba(200,168,80,.3);z-index:200;display:flex;flex-direction:column;transition:right .3s ease;overflow:hidden}
@@ -250,7 +252,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="go-winner" id="goWinner"></div>
   <div class="go-subtitle">ha vinto la partita!</div>
   <div class="go-scores" id="goScores"></div>
-  <button class="btn btn-red" style="max-width:220px" onclick="location.reload()">Nuova Partita</button>
+  <div id="goActions"></div>
 </div>
 
 <!-- ═══ ROUND SCOREBOARD ═══ -->
@@ -304,6 +306,7 @@ input.code-input{text-align:center;font-size:26px;letter-spacing:8px;font-family
   <div class="log-entries" id="logEntries"></div>
 </div>
 <div class="scopa-flash" id="scopaFlash" style="display:none"></div>
+<div class="collection-flash" id="collectionFlash" style="display:none"></div>
 
 <!-- ═══ RULES DRAWER ═══ -->
 <div class="rules-drawer" id="rulesDrawer">
@@ -532,7 +535,18 @@ window.confirmFirstPlayer=async(idx)=>{
   const dealer=(firstPlayer-1+n)%n;
   const gs=createGameState(players,dealer);
   document.getElementById('firstPickOverlay').style.display='none';
-  await update(ref(db,`rooms/${roomCode}`),{state:gs,started:true,picking:false,pushedBy:-1});
+  const wasListening=listening;
+  await update(ref(db,`rooms/${roomCode}`),{state:gs,started:true,picking:false,pushedBy:PI});
+  if(wasListening){
+    // Play again: begin game directly; listener returns early because pushedBy===PI
+    beginGame(gs,PI);
+  }
+  // Initial start: listenRoom callback handles beginGame for all players
+};
+
+window.hostPlayAgain=async()=>{
+  await update(ref(db,`rooms/${roomCode}`),{picking:true,started:false,state:null});
+  showFirstPickUI(GS.playerNames);
 };
 
 // ── Begin game ────────────────────────────────────────
@@ -552,36 +566,45 @@ function startListening(){
   stateUnsub=onValue(ref(db,`rooms/${roomCode}`),async snap=>{
     if(!snap.exists())return;
     const room=snap.val();
+
+    // Play-again: host triggered who-goes-first picker
+    if(room.picking&&!isHost){
+      if(document.getElementById('firstPickOverlay').style.display==='none'){
+        showFirstPickUI(room.players||(GS?GS.playerNames:[]));
+      }
+      return;
+    }
+
     if(!room.state||room.pushedBy===PI)return;
     const remote=sanitizeGS(deepCopy(room.state));
 
-    // If this is a preview push (animation), show the animation then wait for final
+    // Preview push: show animation then wait for final
     if(remote.phase==='preview'){
       pendingCard        =remote.previewCard||null;
       pendingCapture     =remote.previewCapture||null;
       pendingTableBefore =remote.previewTableBefore||null;
       render();
-      return; // final state will come in the next push
+      return;
     }
 
-    // Clear any pending preview
     pendingCard=null;pendingCapture=null;pendingTableBefore=null;
 
-    // Flash scopa if one was scored this move
     if(remote.lastScopaBy!==null&&remote.lastScopaBy!==undefined)flashScopa('SCOPA!');
 
-    // Round-end state: show scoreboard
     if(remote.phase==='roundEnd'){
       GS=remote;totalScores=[...remote.scores];
+      if(remote.collectedBy!==null&&remote.collectedBy!==undefined)await flashCollection(remote.playerNames[remote.collectedBy]);
       showRoundScoreboard(remote);
       return;
     }
 
     document.getElementById('roundOverlay').style.display='none';
+    document.getElementById('firstPickOverlay').style.display='none';
     closeDrawer();
     GS=remote;
     totalScores=[...remote.scores];
     selectedCard=null;selectedCaptures=[];possibleCaptures=[];
+    if(!document.getElementById('sGame').classList.contains('active'))showScreen('sGame');
     render();
   });
 }
@@ -729,6 +752,7 @@ window.playCard=async()=>{
   if(!gs)return;
   GS=gs;
   if(GS.phase==='roundEnd'){
+    if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
     render();
@@ -776,12 +800,13 @@ function advance(gs){
   }
 
   if(gs.deck.length===0){
+    let collectedBy=null;
     if(gs.lastCapture!==null&&gs.table.length>0){
+      collectedBy=gs.lastCapture;
       gs.captured[gs.lastCapture]=[...gs.captured[gs.lastCapture],...gs.table];
       gs.table=[];
     }
-    // Return round-end state — scoring happens after ready
-    return{...gs,phase:'roundEnd',scores:[...totalScores]};
+    return{...gs,phase:'roundEnd',scores:[...totalScores],collectedBy};
   }
   return gs;
 }
@@ -909,7 +934,16 @@ function endGame(gs,wi){
   showScreen('sGameOver');
   document.getElementById('goWinner').textContent='🏆 '+gs.playerNames[wi];
   document.getElementById('goScores').innerHTML=gs.playerNames.map((n,i)=>`<div class="score-row"><span>${n}${i===PI?' (tu)':''}</span><span class="pts">${totalScores[i]} pt</span></div>`).join('');
-  if(roomCode)remove(ref(db,`rooms/${roomCode}`));
+  if(roomCode){
+    update(ref(db,`rooms/${roomCode}`),{ready:null});
+    if(isHost){
+      document.getElementById('goActions').innerHTML=`<button class="btn btn-red" style="max-width:220px;margin-top:8px" onclick="hostPlayAgain()">Play Again</button>`;
+    } else {
+      document.getElementById('goActions').innerHTML=`<div class="waiting-msg" style="margin-top:16px">Waiting for host to start again…</div>`;
+    }
+  } else {
+    document.getElementById('goActions').innerHTML=`<button class="btn btn-red" style="max-width:220px;margin-top:8px" onclick="location.reload()">Nuova Partita</button>`;
+  }
 }
 
 // ── Cards Drawer ──────────────────────────────────────
@@ -981,6 +1015,7 @@ window.toggleLog=()=>{const p=document.getElementById('logPanel');p.style.displa
 window.toggleScores=()=>{const o=document.getElementById('scoresOverlay');o.style.display=o.style.display==='none'?'flex':'none';};
 window.toggleRules=()=>{document.getElementById('rulesDrawer').classList.toggle('open');};
 function flashScopa(msg){const el=document.getElementById('scopaFlash');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2000);}
+function flashCollection(name){return new Promise(r=>{const el=document.getElementById('collectionFlash');el.textContent=`${name} collects the remaining cards`;el.style.display='block';setTimeout(()=>{el.style.display='none';r();},2000);});}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
 </script>
 </body>
