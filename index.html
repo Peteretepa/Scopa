@@ -560,11 +560,15 @@ function _doCrossfade(){
 function _loadVol(){
   const mv=parseFloat(localStorage.getItem('vol_music')??'0.5');
   const sv=parseFloat(localStorage.getItem('vol_sfx')??'0.5');
+  _musicMuted=localStorage.getItem('mute_music')==='1';
+  _sfxMuted=localStorage.getItem('mute_sfx')==='1';
   _bgmTargetVol=mv*0.04;
-  if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else _activeBgm.volume=_bgmTargetVol;
-  if(_sfxGain)_sfxGain.gain.value=sv*0.6;
-  const ms=document.getElementById('volMusic');if(ms)ms.value=mv;
-  const ss=document.getElementById('volSfx');if(ss)ss.value=sv;
+  if(_bgmGain)_bgmGain.gain.value=_musicMuted?0:_bgmTargetVol;else _activeBgm.volume=_musicMuted?0:_bgmTargetVol;
+  if(_sfxGain)_sfxGain.gain.value=_sfxMuted?0:sv*0.6;
+  const ms=document.getElementById('volMusic');if(ms){ms.value=mv;ms.disabled=_musicMuted;ms.style.opacity=_musicMuted?'0.35':'';}
+  const ss=document.getElementById('volSfx');if(ss){ss.value=sv;ss.disabled=_sfxMuted;ss.style.opacity=_sfxMuted?'0.35':'';}
+  const mb=document.getElementById('muteMusic');if(mb){mb.textContent=_musicMuted?'OFF':'ON';mb.classList.toggle('muted',_musicMuted);}
+  const sb=document.getElementById('muteSfx');if(sb){sb.textContent=_sfxMuted?'OFF':'ON';sb.classList.toggle('muted',_sfxMuted);}
 }
 function _saveVol(type,val){localStorage.setItem('vol_'+type,val);}
 window.setMusicVol=v=>{_bgmTargetVol=parseFloat(v)*0.04;if(_bgmGain)_bgmGain.gain.value=_bgmTargetVol;else if(!_crossfading)_activeBgm.volume=_bgmTargetVol;_saveVol('music',v);};
@@ -576,6 +580,7 @@ window.toggleMuteMusic=()=>{
   btn.textContent=_musicMuted?'OFF':'ON';btn.classList.toggle('muted',_musicMuted);
   sl.disabled=_musicMuted;sl.style.opacity=_musicMuted?'0.35':'';
   if(_bgmGain)_bgmGain.gain.value=_musicMuted?0:_bgmTargetVol;else _activeBgm.volume=_musicMuted?0:_bgmTargetVol;
+  localStorage.setItem('mute_music',_musicMuted?'1':'0');
 };
 window.toggleMuteSfx=()=>{
   _sfxMuted=!_sfxMuted;
@@ -583,6 +588,7 @@ window.toggleMuteSfx=()=>{
   btn.textContent=_sfxMuted?'OFF':'ON';btn.classList.toggle('muted',_sfxMuted);
   sl.disabled=_sfxMuted;sl.style.opacity=_sfxMuted?'0.35':'';
   if(_sfxGain)_sfxGain.gain.value=_sfxMuted?0:parseFloat(sl.value)*0.6;
+  localStorage.setItem('mute_sfx',_sfxMuted?'1':'0');
 };
 window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.style.display=p.style.display==='none'?'flex':'none';};
 function _snd(url,vol=1){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];if(vol!==1){const g=_AC.createGain();g.gain.value=vol;s.connect(g);g.connect(_sfxGain||_AC.destination);}else s.connect(_sfxGain||_AC.destination);s.start(0);}}
@@ -1343,14 +1349,6 @@ function deepCopy(o){return JSON.parse(JSON.stringify(o));}
   </div>
   <button class="bb-btn" onclick="toggleRules()" title="Regole" style="font-family:'IM Fell English SC',serif;font-size:19px">?</button>
 </div>
-<!-- TEMP: sound test widget -->
-<div id="soundTest" style="position:fixed;bottom:16px;right:16px;z-index:9999;background:#1a1400;border:1px solid rgba(200,168,80,.5);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,.6);min-width:160px">
-  <div style="font-size:9px;color:rgba(200,168,80,.35);letter-spacing:.12em;margin-bottom:2px;text-align:center">TEMP — SOUND TEST</div>
-  <button onclick="_testSound('card')"    style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Drop (card play)</button>
-  <button onclick="_testSound('deal')"    style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Place (deal)</button>
-  <button onclick="_testSound('capture')" style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Slide (capture)</button>
-  <button onclick="_testSound('scopa')"   style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Sweep (scopa)</button>
-  <button onclick="_testSound('shuffle')" style="background:rgba(200,168,80,.1);border:1px solid rgba(200,168,80,.35);color:#c8a850;border-radius:5px;padding:5px 10px;cursor:pointer;font-size:12px;text-align:left">Shuffle</button>
-</div>
+
 </body>
 </html>
