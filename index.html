@@ -588,7 +588,7 @@ window.toggleAudioPanel=()=>{const p=document.getElementById('audioPanel');p.sty
 function _snd(url,vol=1){return()=>{if(!_AC||_AC.state!=='running'||!_BUF[url])return;const s=_AC.createBufferSource();s.buffer=_BUF[url];if(vol!==1){const g=_AC.createGain();g.gain.value=vol;s.connect(g);g.connect(_sfxGain||_AC.destination);}else s.connect(_sfxGain||_AC.destination);s.start(0);}}
 function _deal3(){SFX.deal();setTimeout(SFX.deal,200);setTimeout(SFX.deal,400);}
 function _startDealAnim(){render({dealAnim:true});setTimeout(_deal3,200);setTimeout(()=>render(),650);}
-const SFX={card:_snd('Drop.wav',5.0),deal:_snd('place.wav'),capture:_snd('slide.wav',0.6),scopa:_snd('Sweep.mp3',0.25),shuffle:_snd('shuffle.wav')};
+const SFX={card:_snd('Drop.wav',6.0),deal:_snd('place.wav',0.8),capture:_snd('slide.wav',0.5),scopa:_snd('Sweep.mp3',0.2),shuffle:_snd('shuffle.wav',0.8)};
 window._testSound=name=>SFX[name]?.();
 setTimeout(_loadVol,0);
 
