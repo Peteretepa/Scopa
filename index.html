@@ -827,6 +827,7 @@ function startListening(){
       if(remote.round===lastShownRoundEnd)return; // ready:null update re-fires listener with stale state; ignore
       lastShownRoundEnd=remote.round;
       GS=remote;totalScores=[...remote.scores];
+      render();
       if(remote.collectedBy!==null&&remote.collectedBy!==undefined)await flashCollection(remote.playerNames[remote.collectedBy]);
       showRoundScoreboard(remote);
       return;
@@ -1013,6 +1014,7 @@ window.playCard=async()=>{
 
   if(GS.phase==='roundEnd'){
     lastShownRoundEnd=GS.round;
+    render();
     if(GS.collectedBy!==null&&GS.collectedBy!==undefined)await flashCollection(GS.playerNames[GS.collectedBy]);
     showRoundScoreboard(GS);
   } else {
